@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login-register.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Patrón de ondas animadas -->
+    <div class="wave-background">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <div class="container">
+        <div class="illustration">
+            <img src="../../static/img/shared/LOGOSINFONDO.png" alt="Logo" class="animate-img" id="theme-image">
+        </div>
+        <div class="login-box animate-box">
+            <h2 class="title-main">Bienvenido</h2>
+            <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
+                {% if error %}
+                <div class="error-message" style="color: #e74c3c; margin-bottom: 15px; text-align: center;">
+                    {{ error }}
+                </div>
+                {% endif %}
+                <div class="input-box">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Nombre de usuario o email" required>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <div class="register-link" style="text-align: right;">
+                    <a href="{{ url_for('auth.cambiar_clave') }}" style="color: #1c3166;">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="login-btn">Entrar</button>
+                <div class="register-link">
+                    <a href="{{ url_for('auth.register') }}">¿No tienes cuenta? Regístrate</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/auth/login-register.js') }}"></script>
+</body>
+</html>

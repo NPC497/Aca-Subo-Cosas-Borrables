@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad vista Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/tables.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header-table">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+            </div>
+        </div>
+    </header>
+
+    <!-- Overlay para cuando el menú está abierto -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navegación lateral -->
+    <nav class="side-nav-table" id="side-nav-table">
+        <div class="nav-content">
+            <div class="nav-links-main">
+                {% if is_admin %}
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                    <i class='fas fa-home'></i>
+                    <span>Inicio</span>
+                </a>
+                <!-- Admin only links -->
+                <a href="{{ url_for('roles') }}" class="nav-link" data-name="roles">
+                    <i class='fas fa-user-tag'></i>
+                    <span>Roles</span>
+                </a>
+                <a href="{{ url_for('usuarios') }}" class="nav-link" data-name="usuarios">
+                    <i class='fas fa-users'></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="{{ url_for('usuarios_temporarios') }}" class="nav-link" data-name="usuarios-temporarios">
+                    <i class='fas fa-user-clock'></i>
+                    <span>Alta de Usuarios</span>
+                </a>
+                <a href="{{ url_for('puerta') }}" class="nav-link" data-name="puertas">
+                    <i class='fas fa-door-open'></i>
+                    <span>Puertas</span>
+                </a>
+                <a href="{{ url_for('permisos') }}" class="nav-link" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                <a href="{{ url_for('actividad') }}" class="nav-link active" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                    <i class='fas fa-home'></i>
+                    <span>Inicio</span>
+                </a>
+                {% if can_assign_permissions %}
+                <a href="{{ url_for('permisos') }}" class="nav-link" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('actividad') }}" class="nav-link active" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+                {% endif %}
+            </div>
+            
+            
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container animate-box">
+        <div class="abm-box">
+            <h1 class="title-abm">Actividades de todos los usuarios</h1>
+            <div class="search-container">
+                <div class="input-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar actividad de...">
+                </div>
+                <div class="filter-container">
+                    <select id="activityFilter" class="filter-select">
+                        <option value="all">Todas las actividades</option>
+                        <option value="enter">Entradas</option>
+                        <option value="exit">Salidas</option>
+                    </select>
+                </div>
+                <div class="select-box">   
+                    <select id="activityUserFilter">
+                        <option value="all">Todos los Usuarios</option>
+                        <option value="Ricardo Fort">Administrador</option>
+                        <option value="Daniel Freccero">Usuario</option>
+                    </select>
+                </div>
+                <div class="select-box">   
+                    <select id="activityDoorFilter">
+                        <option value="all">Todas las Puertas</option>
+                        <option value="puerta1">puerta1</option>
+                        <option value="puerta2">puerta2</option>
+                        <option value="puerta3">puerta3</option>
+                    </select>
+                </div>
+                <button class="btn-filter">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="users-table" id="activityTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="user">Usuario<i class="fas fa-sort"></i></th>
+                            <th data-sort="door">Ubicación/Origen<i class="fas fa-sort"></i></th>
+                            <th data-sort="datetime">Fecha y Hora<i class="fas fa-sort"></i></th>
+                            <th data-sort="details">Detalle de la Actividad<i class="fas fa-sort"></i></th>
+                            <th data-sort="type">Tipo<i class="fas fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityTableBody">
+                        <!-- Las actividades se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin/tables.js') }}"></script>
+    <script>
+        // Mapeo de tipos de actividad a iconos y clases CSS
+        const activityIcons = {
+            'login': { icon: 'fa-sign-in-alt', color: 'var(--success-color)', label: 'Inicio de sesión' },
+            'door': { icon: 'fa-door-open', color: 'var(--primary-color)', label: 'Acceso a puerta' },
+            'profile': { icon: 'fa-user-edit', color: 'var(--info-color)', label: 'Actualización de perfil' },
+            'registro': { icon: 'fa-user-plus', color: 'var(--success-color)', label: 'Registro de usuario' },
+            'cambio_password': { icon: 'fa-key', color: 'var(--warning-color)', label: 'Cambio de contraseña' },
+            'cambio_foto_perfil': { icon: 'fa-camera', color: 'var(--info-color)', label: 'Cambio de foto' },
+            'default': { icon: 'fa-info-circle', color: 'var(--secondary-color)', label: 'Actividad del sistema' }
+        };
+
+        // Función para obtener el icono y color según el tipo de actividad
+        function getActivityIcon(tipo) {
+            const tipoLower = tipo ? tipo.toLowerCase() : 'default';
+            return activityIcons[tipoLower] || activityIcons['default'];
+        }
+
+        // Función para formatear la fecha
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            return new Date(dateString).toLocaleString('es-AR', options);
+        }
+
+        // Función para cargar actividades desde el servidor
+        async function cargarActividades() {
+            try {
+                const response = await fetch('/api/actividades');
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const tbody = document.getElementById('activityTableBody');
+                    tbody.innerHTML = '';
+                    
+                    data.data.forEach(actividad => {
+                        const row = document.createElement('tr');
+                        const activityIcon = getActivityIcon(actividad.tipo_actividad);
+                        
+                        row.innerHTML = `
+                            <td>${actividad.nombre_completo || 'Usuario desconocido'}</td>
+                            <td>${actividad.puerta || 'Sistema'}</td>
+                            <td>${formatDate(actividad.fecha_hora)}</td>
+                            <td>${actividad.detalles || 'Sin detalles'}</td>
+                            <td>
+                                <span class="activity-badge" style="color: ${activityIcon.color}">
+                                    <i class="fas ${activityIcon.icon}"></i> ${activityIcon.label}
+                                </span>
+                            </td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    });
+                    
+                    // Aplicar ordenamiento inicial
+                    applySorting();
+                } else {
+                    console.error('Error al cargar actividades:', data.message || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('Error al cargar actividades:', error);
+            }
+        }
+
+        // Función para aplicar el ordenamiento
+        function applySorting() {
+            const table = document.getElementById('activityTable');
+            const headers = table.querySelectorAll('th[data-sort]');
+            
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.getAttribute('data-sort');
+                    const direction = header.getAttribute('data-direction') || 'asc';
+                    const newDirection = direction === 'asc' ? 'desc' : 'asc';
+                    
+                    // Actualizar indicador de dirección
+                    headers.forEach(h => h.removeAttribute('data-direction'));
+                    header.setAttribute('data-direction', newDirection);
+                    
+                    // Ordenar la tabla
+                    sortTable(column, newDirection);
+                });
+            });
+        }
+
+        // Función para ordenar la tabla
+        function sortTable(column, direction) {
+            const table = document.getElementById('activityTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aValue = a.cells[getColumnIndex(column)].textContent.trim().toLowerCase();
+                const bValue = b.cells[getColumnIndex(column)].textContent.trim().toLowerCase();
+                
+                if (column === 'datetime') {
+                    const aDate = new Date(a.cells[getColumnIndex(column)].getAttribute('data-sort') || aValue);
+                    const bDate = new Date(b.cells[getColumnIndex(column)].getAttribute('data-sort') || bValue);
+                    return direction === 'asc' ? aDate - bDate : bDate - aDate;
+                }
+                
+                return direction === 'asc' 
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            });
+            
+            // Reordenar las filas en la tabla
+            rows.forEach(row => tbody.appendChild(row));
+        }
+        
+        // Función auxiliar para obtener el índice de la columna
+        function getColumnIndex(column) {
+            const headers = document.querySelectorAll('th[data-sort]');
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].getAttribute('data-sort') === column) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        // Cargar actividades al iniciar
+        document.addEventListener('DOMContentLoaded', cargarActividades);
+    </script>
+</body>
+</html>

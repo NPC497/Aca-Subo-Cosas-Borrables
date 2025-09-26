@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Puertas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/tables.css') }}">
+    <style>
+        /* Add any additional styles here that aren't in the main CSS file */
+        .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin: 0 auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+        
+        .door-img {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            color: #616161;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .door-img:hover {
+            background-color: #eeeeee;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .status-badge.yes {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .status-badge.no {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        /* User Count Badge */
+        .user-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #e1bee7;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            min-width: 100px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .user-count-badge:hover {
+            background-color: #e8d4f0;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-count-badge i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+
+        .btn-action.view-users {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #e1bee7;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action.view-users:hover {
+            background-color: #e8d4f0;
+            color: #6a1b9a;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos para el modal de usuarios */
+        .door-users-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+
+        .user-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #212529;
+            margin-bottom: 2px;
+        }
+
+        .user-dni, .user-role, .user-access-type {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 1px;
+        }
+
+        .user-access-type {
+            font-weight: 500;
+            color: #7b1fa2;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .loading-spinner i {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .no-users-message, .error-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .no-users-message p, .error-message p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+        }
+
+        .error-message {
+            color: #dc3545;
+        }
+
+        .error-message i {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header-table">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+            </div>
+        </div>
+    </header>
+
+    <!-- Overlay para cuando el menú está abierto -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navegación lateral -->
+    <nav class="side-nav-table" id="side-nav-table">
+        <div class="nav-content">
+            <div class="nav-links-main">
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                  <i class='fas fa-home'></i>
+                  <span>Inicio</span>
+                </a>
+                <a href="{{ url_for('roles') }}" class="nav-link" data-name="roles">
+                  <i class='fas fa-user-tag'></i>
+                  <span>Roles</span>
+                </a>
+                <a href="{{ url_for('usuarios') }}" class="nav-link" data-name="usuarios">
+                    <i class='fas fa-users'></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="{{ url_for('usuarios_temporarios') }}" class="nav-link" data-name="usuarios-temporarios">
+                    <i class='fas fa-user-clock'></i>
+                    <span>Alta de Usuarios</span>
+                </a>
+                <a href="{{ url_for('puerta') }}" class="nav-link active" data-name="puertas">
+                    <i class='fas fa-door-open'></i>
+                    <span>Puertas</span>
+                </a>
+                <a href="{{ url_for('permisos') }}" class="nav-link" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                <a href="{{ url_for('actividad') }}" class="nav-link" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container animate-box">
+        <div class="abm-box">
+            <h1 class="title-abm">Gestión de Puertas</h1>
+            
+            <div class="search-container">
+                <div class="input-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar puerta por nombre...">
+                </div>
+                <div class="select-box">   
+                    <select id="permitDoorFilter">
+                        <option value="all">Todos los estados</option>
+                        <option value="activa">Activa</option>
+                        <option value="inactiva">Inactiva</option>
+                    </select>
+                </div>
+                <!-- Filtro de roles -->
+                <div class="select-box">   
+                    <select id="roleFilter">
+                        <option value="all">Todos los roles</option>
+                        <option value="admin">Administrador</option>
+                        <option value="user">Usuario</option>
+                        <option value="guest">Invitado</option>
+                    </select>
+                </div>
+                <button class="btn-filter">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+
+                <button class="registro-btn" id="addDoorButton">
+                    <i class="fas fa-door-open"></i> Registrar puerta
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="users-table" id="doorsTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="name">Nombre<i class="fas fa-sort"></i></th>
+                            <th data-sort="status">Estado<i class="fas fa-sort"></i></th>
+                            <th data-sort="date">Fecha de creación<i class="fas fa-sort"></i></th>
+                            <th data-sort="img">Imagen de puerta<i class="fas fa-sort"></i></th>
+                            <th data-sort="users">Usuarios con acceso<i class="fas fa-sort"></i></th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for puerta in puertas %}
+                        <tr>
+                            <td>{{ puerta.nombre }}</td>
+                            <td>
+                                <span class="status-badge {% if puerta.estado == 'activa' %}yes">Abierta{% else %}no">Cerrada{% endif %}</span>
+                            </td>
+                            <td>{{ puerta.fecha_creacion.strftime('%Y-%m-%d') if puerta.fecha_creacion else 'N/A' }}</td>
+                            <td>
+                                {% if puerta.imagen %}
+                                {% set imagen_nombre = puerta.imagen.split('/')[-1] %}
+                                <span class="door-img" data-img="{{ url_for('static', filename=puerta.imagen) }}">
+                                    {{ imagen_nombre }}
+                                </span>
+                                {% else %}
+                                <span>Sin imagen</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="user-count-badge" onclick="openDoorUsersModal('{{ puerta.id }}')">
+                                    <i class="fas fa-users"></i>
+                                    {{ puerta.usuarios|default(0) }} usuario{% if puerta.usuarios|default(0) != 1 %}s{% endif %}
+                                </span>
+                            </td>
+                            <td class="actions">
+                                <button class="btn-action delete" title="Eliminar" data-id="{{ puerta.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn-action edit" title="Modificar" data-id="{{ puerta.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action view-users" title="Ver usuarios" data-id="{{ puerta.id }}">
+                                    <i class="fas fa-users"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No hay puertas registradas</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar esta puerta?</p>
+                <p>Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDelete">Cancelar</button>
+                <button class="btn-danger" id="confirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para registrar/editar puerta -->
+    <div id="doorFormModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Registrar Puerta</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="doorForm">
+                    <input type="hidden" id="doorId" value="">
+                    <div class="form-group">
+                        <label for="doorName">Nombre de la puerta:</label>
+                        <input type="text" id="doorName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="doorImg">Imagen (opcional):</label>
+                        <input type="file" id="doorImg" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelForm">Cancelar</button>
+                <button class="btn-primary" id="saveDoor">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar imagen de puerta -->
+    <div id="imageDisplayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Imagen de Puerta</h2>
+                <span class="close" id="closeImageModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <img id="displayedImage" src="" alt="Imagen de Puerta" style="max-width: 100%; max-height: 80vh; display: block; margin: 0 auto;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeImageModalButton">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver usuarios de una puerta -->
+    <div id="doorUsersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Usuarios con Acceso</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="door-users-list" id="doorUsersList">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeDoorUsersModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Atención</h2>
+                <span class="close" id="closeAlertModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="alertModalMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeAlertModalButton">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin/puertas.js') }}"></script>
+    <script>
+        // Script específico para la gestión de puertas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables globales
+            let currentDoorId = null;
+            
+            // Elementos del DOM
+            const addDoorButton = document.getElementById('addDoorButton');
+            const doorFormModal = document.getElementById('doorFormModal');
+            const deleteModal = document.getElementById('deleteModal');
+            const imageDisplayModal = document.getElementById('imageDisplayModal');
+            const doorUsersModal = document.getElementById('doorUsersModal');
+            const alertModal = document.getElementById('alertModal');
+            
+            // Botones de cierre de modales
+            const closeButtons = document.querySelectorAll('.close');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Mostrar modal para agregar puerta
+            if (addDoorButton) {
+                addDoorButton.addEventListener('click', function() {
+                    document.getElementById('modalTitle').textContent = 'Registrar Puerta';
+                    document.getElementById('doorForm').reset();
+                    document.getElementById('doorId').value = '';
+                    document.getElementById('doorName').value = '';
+                    doorFormModal.style.display = 'flex';
+                });
+            }
+            
+            // Manejar clics en botones de edición
+            document.querySelectorAll('.btn-action.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const doorId = this.getAttribute('data-id');
+                    currentDoorId = doorId;
+                    document.getElementById('modalTitle').textContent = 'Editar Puerta';
+                    document.getElementById('doorId').value = doorId;
+                    
+                    // Mostrar indicador de carga
+                    const saveButton = document.getElementById('saveDoor');
+                    const originalText = saveButton.textContent;
+                    saveButton.textContent = 'Cargando...';
+                    saveButton.disabled = true;
+                    
+                    // Cargar datos de la puerta
+                    fetch(`/api/puertas/${doorId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Llenar el formulario con los datos de la puerta
+                                document.getElementById('doorName').value = data.nombre || '';
+                                // No cargamos la imagen ya que es complejo con input file
+                                
+                                // Mostrar el modal
+                                doorFormModal.style.display = 'flex';
+                            } else {
+                                showAlert('Error al cargar los datos de la puerta', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar la puerta:', error);
+                            showAlert('Error de conexión al cargar la puerta', 'error');
+                        })
+                        .finally(() => {
+                            // Restaurar botón
+                            saveButton.textContent = originalText;
+                            saveButton.disabled = false;
+                        });
+                });
+            });
+            
+            // Manejar clics en botones de eliminar
+            document.querySelectorAll('.btn-action.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentDoorId = this.getAttribute('data-id');
+                    deleteModal.style.display = 'flex';
+                });
+            });
+            
+            // Manejar clics en botones de ver usuarios
+            document.querySelectorAll('.btn-action.view-users').forEach(button => {
+                button.addEventListener('click', function() {
+                    const doorId = this.getAttribute('data-id');
+                    loadDoorUsers(doorId);
+                    doorUsersModal.style.display = 'flex';
+                });
+            });
+            
+            // Mostrar imagen de puerta al hacer clic
+            document.querySelectorAll('.door-img').forEach(img => {
+                img.addEventListener('click', function() {
+                    const imgSrc = this.getAttribute('data-img');
+                    if (imgSrc) {
+                        document.getElementById('displayedImage').src = imgSrc;
+                        imageDisplayModal.style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Función para cargar usuarios de una puerta
+            function loadDoorUsers(doorId) {
+                const doorUsersList = document.getElementById('doorUsersList');
+                doorUsersList.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Cargando usuarios...</div>';
+                
+                // Realizar petición al API para obtener usuarios con acceso a la puerta
+                fetch(`/api/puertas/${doorId}/usuarios`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.usuarios) {
+                            if (data.usuarios.length === 0) {
+                                doorUsersList.innerHTML = `
+                                    <div class="no-users-message">
+                                        <i class="fas fa-users-slash" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+                                        <p>No hay usuarios con acceso a esta puerta</p>
+                                    </div>
+                                `;
+                            } else {
+                                let usersHTML = '';
+                                data.usuarios.forEach(usuario => {
+                                    usersHTML += `
+                                        <div class="user-item">
+                                            <div class="user-avatar">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="user-info">
+                                                <div class="user-name">${usuario.nombre} ${usuario.apellido}</div>
+                                                <div class="user-dni">DNI: ${usuario.dni}</div>
+                                                <div class="user-role">Rol: ${usuario.rol}</div>
+                                                <div class="user-access-type">Acceso: ${usuario.tipo_acceso}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                doorUsersList.innerHTML = usersHTML;
+                            }
+                        } else {
+                            doorUsersList.innerHTML = `
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                                    <p>Error al cargar los usuarios: ${data.message || 'Error desconocido'}</p>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar usuarios de la puerta:', error);
+                        doorUsersList.innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                                <p>Error de conexión al servidor</p>
+                            </div>
+                        `;
+                    });
+            }
+            
+            // Cerrar modales al hacer clic fuera del contenido
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            });
+            
+            // Botones de cierre específicos
+            document.getElementById('closeImageModalButton')?.addEventListener('click', function() {
+                imageDisplayModal.style.display = 'none';
+            });
+            
+            document.getElementById('closeDoorUsersModal')?.addEventListener('click', function() {
+                doorUsersModal.style.display = 'none';
+            });
+            
+            document.getElementById('closeAlertModalButton')?.addEventListener('click', function() {
+                alertModal.style.display = 'none';
+            });
+            
+            // Confirmar eliminación
+            document.getElementById('confirmDelete')?.addEventListener('click', function() {
+                if (!currentDoorId) {
+                    console.error('No se ha seleccionado ninguna puerta para eliminar');
+                    return;
+                }
+                
+                console.log(`Intentando eliminar puerta con ID: ${currentDoorId}`);
+                
+                fetch(`/api/puertas/${currentDoorId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    },
+                    credentials: 'same-origin'  // Asegura que se envíen las cookies de sesión
+                })
+                .then(response => {
+                    console.log('Respuesta del servidor:', response);
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || 'Error en la respuesta del servidor');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Datos de respuesta:', data);
+                    if (data && data.success) {
+                        // Cerrar el modal
+                        document.getElementById('deleteModal').style.display = 'none';
+                        // Mostrar notificación de éxito
+                        showNotification('Puerta eliminada correctamente', 'success');
+                        // Recargar la tabla de puertas después de un breve retraso
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        throw new Error(data?.message || 'Error al eliminar la puerta');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al eliminar la puerta:', error);
+                    showNotification(error.message || 'Error al eliminar la puerta', 'error');
+                    // Cerrar el modal de confirmación en caso de error
+                    document.getElementById('deleteModal').style.display = 'none';
+                });
+            });
+
+            // Manejar clic en botón de cancelar eliminación
+            document.getElementById('cancelDelete')?.addEventListener('click', function() {
+                currentDoorId = null;
+                document.getElementById('deleteModal').style.display = 'none';
+            });
+            
+            // Guardar cambios del formulario
+            document.getElementById('saveDoor')?.addEventListener('click', function() {
+                const doorName = document.getElementById('doorName').value;
+                const doorImg = document.getElementById('doorImg').files[0];
+                const doorId = document.getElementById('doorId').value;
+                const isNew = !doorId;
+                
+                if (!doorName) {
+                    showAlert('Por favor ingrese un nombre para la puerta', 'error');
+                    return;
+                }
+
+                // Siempre usar FormData para manejar tanto texto como archivos
+                const formData = new FormData();
+                formData.append('nombre', doorName);
+                
+                // Solo agregar la imagen si se seleccionó un archivo
+                if (doorImg) {
+                    formData.append('imagen', doorImg);
+                }
+                
+                // Configurar el estado (siempre inactivo para nuevas puertas)
+                const estado = isNew ? 'inactiva' : document.querySelector('input[name="doorStatus"]:checked')?.value || 'inactiva';
+                formData.append('estado', estado);
+                
+                // Mostrar indicador de carga
+                const saveButton = document.getElementById('saveDoor');
+                const originalText = saveButton.textContent;
+                saveButton.textContent = 'Guardando...';
+                saveButton.disabled = true;
+                
+                // Determinar URL y método
+                const url = isNew ? '/api/puertas' : `/api/puertas/${doorId}`;
+                const method = isNew ? 'POST' : 'PUT';
+                
+                // Realizar petición al servidor
+                fetch(url, {
+                    method: method,
+                    body: formData,
+                    // No establecer Content-Type manualmente, el navegador lo hará con el boundary correcto
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        doorFormModal.style.display = 'none';
+                        
+                        // Guardar mensaje en localStorage para mostrar después del reload
+                        const message = isNew ? 'Puerta registrada correctamente' : 'Puerta actualizada correctamente';
+                        localStorage.setItem('doorActionMessage', message);
+                        localStorage.setItem('doorActionType', 'success');
+                        
+                        // Recargar la página para mostrar los cambios
+                        window.location.reload();
+                    } else {
+                        showAlert(data.message || 'Error al guardar la puerta', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('Error de conexión al servidor', 'error');
+                })
+                .finally(() => {
+                    // Restaurar botón
+                    saveButton.textContent = originalText;
+                    saveButton.disabled = false;
+                });
+            });
+            
+            // Función para mostrar alertas
+            function showAlert(message, type = 'info') {
+                const alertMessage = document.getElementById('alertModalMessage');
+                const alertHeader = alertModal.querySelector('h2');
+                
+                alertMessage.textContent = message;
+                
+                // Establecer el color del encabezado según el tipo de alerta
+                if (type === 'success') {
+                    alertHeader.style.color = '#27ae60';
+                } else if (type === 'error') {
+                    alertHeader.style.color = '#e74c3c';
+                } else {
+                    alertHeader.style.color = '#3498db';
+                }
+                
+                alertModal.style.display = 'flex';
+            }
+
+            // Función para mostrar notificaciones (usando el sistema existente)
+            function showNotification(message, type) {
+                const notification = document.createElement("div")
+                notification.className = `notification ${type}`
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `
+                
+                document.body.appendChild(notification)
+                
+                // Mostrar notificación
+                setTimeout(() => {
+                    notification.style.right = "20px"
+                }, 100)
+                
+                // Auto-ocultar después de 4 segundos
+                setTimeout(() => {
+                    notification.style.right = "-300px"
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification)
+                        }
+                    }, 300)
+                }, 4000)
+            }
+
+            // Verificar si hay mensajes pendientes al cargar la página
+            window.addEventListener('load', function() {
+                const message = localStorage.getItem('doorActionMessage');
+                const type = localStorage.getItem('doorActionType');
+                
+                if (message) {
+                    showNotification(message, type || 'success');
+                    
+                    // Limpiar localStorage
+                    localStorage.removeItem('doorActionMessage');
+                    localStorage.removeItem('doorActionType');
+                }
+            });
+            
+            // Cerrar el formulario
+            document.getElementById('cancelForm')?.addEventListener('click', function() {
+                doorFormModal.style.display = 'none';
+            });
+        });
+    </script>
+    
+    <script>
+        // Función global para abrir el modal de usuarios desde el badge
+        function openDoorUsersModal(doorId) {
+            loadDoorUsers(doorId);
+            document.getElementById('doorUsersModal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

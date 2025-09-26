@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargando Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+      /* Paleta de colores */
+      :root {
+          --color1: #fff; /* Blanco */
+          --color2: #00a9d4; /* Azul claro */
+          --color3: #1c3166; /* Azul oscuro */
+          --color4: #240047; /* Púrpura oscuro */
+          --color5: #1c0021; /* Casi negro */
+
+          /* Variables para modo claro (default) */
+          --bg-color: var(--color1); /* Fondo blanco */
+          --text-color: var(--color5); /* Texto oscuro */
+          --container-bg: var(--color1); /* Contenedores blancos */
+          --border-color: var(--color2); /* Bordes azul claro */
+      }
+
+      * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-family: "Inter", sans-serif;
+      }
+
+      body {
+          margin: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          position: relative;
+          overflow: hidden; /* Oculta el scroll para la pantalla de carga */
+          background: linear-gradient(0deg, rgba(149, 207, 224, 0.425) 20%, rgb(0, 170, 212) 80%);
+      }
+
+      /* FONDO ANIMADO CON PATRONES */
+      .background-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+          overflow: hidden;
+          background: linear-gradient(0deg, rgba(255, 255, 255, 0.089) 5%, rgba(0, 170, 212, 0.87) 90%);
+      }
+
+      /* Ondas animadas */
+      .wave {
+          position: absolute;
+          border-radius: 50%;
+          opacity: 0.1;
+          animation: wave-float 6s ease-in-out infinite;
+      }
+
+      .wave-1 {
+          width: 300px;
+          height: 300px;
+          background: linear-gradient(45deg, var(--color3), var(--color4));
+          top: 10%;
+          left: -10%;
+          animation-delay: 0s;
+      }
+
+      .wave-2 {
+          width: 200px;
+          height: 200px;
+          background: linear-gradient(45deg, var(--color3), var(--color5));
+          top: 60%;
+          right: -5%;
+          animation-delay: 2s;
+      }
+
+      .wave-3 {
+          width: 150px;
+          height: 150px;
+          background: linear-gradient(45deg, var(--color5), var(--color2));
+          bottom: 20%;
+          left: 20%;
+          animation-delay: 4s;
+      }
+
+      @keyframes wave-float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+      }
+
+      /* Círculos flotantes */
+      .floating-circles {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      .circle {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(0, 169, 212, 0.05);
+          animation: float 8s ease-in-out infinite;
+      }
+
+      .circle-1 {
+          width: 80px;
+          height: 80px;
+          top: 20%;
+          left: 10%;
+          animation-delay: 0s;
+      }
+
+      .circle-2 {
+          width: 60px;
+          height: 60px;
+          top: 50%;
+          right: 15%;
+          animation-delay: 1s;
+      }
+
+      .circle-3 {
+          width: 40px;
+          height: 40px;
+          bottom: 30%;
+          left: 60%;
+          animation-delay: 2s;
+      }
+
+      .circle-4 {
+          width: 100px;
+          height: 100px;
+          top: 70%;
+          right: 30%;
+          animation-delay: 3s;
+      }
+
+      .circle-5 {
+          width: 50px;
+          height: 50px;
+          top: 15%;
+          right: 50%;
+          animation-delay: 4s;
+      }
+
+      .circle-6 {
+          width: 70px;
+          height: 70px;
+          bottom: 10%;
+          left: 30%;
+          animation-delay: 5s;
+      }
+
+      @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-30px) scale(1.1); }
+      }
+
+      /* Líneas de conexión animadas */
+      .connection-lines {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      .line {
+          position: absolute;
+          background: linear-gradient(90deg, transparent, rgba(0, 39, 212, 0.205), transparent);
+          animation: line-move 10s linear infinite;
+      }
+
+      .line-1 {
+          width: 200px;
+          height: 2px;
+          top: 25%;
+          left: 0;
+          animation-delay: 0s;
+      }
+
+      .line-2 {
+          width: 150px;
+          height: 2px;
+          top: 60%;
+          right: 0;
+          animation-delay: 3s;
+          animation-direction: reverse;
+      }
+
+      .line-3 {
+          width: 100px;
+          height: 2px;
+          bottom: 40%;
+          left: 50%;
+          animation-delay: 6s;
+      }
+
+      @keyframes line-move {
+          0% { transform: translateX(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateX(100vw); opacity: 0; }
+      }
+
+      /* Partículas brillantes */
+      .particles {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      .particle {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background: var(--color2);
+          border-radius: 50%;
+          animation: sparkle 3s ease-in-out infinite;
+      }
+
+      .particle-1 { top: 10%; left: 20%; animation-delay: 0s; }
+      .particle-2 { top: 30%; right: 25%; animation-delay: 0.5s; }
+      .particle-3 { bottom: 40%; left: 40%; animation-delay: 1s; }
+      .particle-4 { top: 60%; right: 10%; animation-delay: 1.5s; }
+      .particle-5 { bottom: 20%; left: 70%; animation-delay: 2s; }
+      .particle-6 { top: 80%; right: 60%; animation-delay: 2.5s; }
+      .particle-7 { top: 40%; left: 80%; animation-delay: 3s; }
+      .particle-8 { bottom: 60%; right: 40%; animation-delay: 3.5s; }
+
+      @keyframes sparkle {
+          0%, 100% { opacity: 0; transform: scale(0); }
+          50% { opacity: 1; transform: scale(1); }
+      }
+
+      /* Formas geométricas decorativas */
+      .geometric-shapes {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      .shape {
+          position: absolute;
+          opacity: 0.03;
+          animation: rotate 20s linear infinite;
+      }
+
+      .triangle-1 {
+          width: 0;
+          height: 0;
+          border-left: 25px solid transparent;
+          border-right: 25px solid transparent;
+          border-bottom: 43px solid var(--color2);
+          top: 15%;
+          left: 80%;
+          animation-delay: 0s;
+      }
+
+      .triangle-2 {
+          width: 0;
+          height: 0;
+          border-left: 20px solid transparent;
+          border-right: 20px solid transparent;
+          border-bottom: 35px solid var(--color3);
+          bottom: 25%;
+          right: 20%;
+          animation-delay: 5s;
+      }
+
+      .hexagon-1 {
+          width: 30px;
+          height: 17px;
+          background: var(--color2);
+          position: relative;
+          top: 40%;
+          left: 15%;
+          animation-delay: 10s;
+      }
+
+      .hexagon-1:before,
+      .hexagon-1:after {
+          content: "";
+          position: absolute;
+          width: 0;
+          border-left: 15px solid transparent;
+          border-right: 15px solid transparent;
+      }
+
+      .hexagon-1:before {
+          bottom: 100%;
+          border-bottom: 8px solid var(--color2);
+      }
+
+      .hexagon-1:after {
+          top: 100%;
+          border-top: 8px solid var(--color2);
+      }
+
+      .hexagon-2 {
+          width: 25px;
+          height: 14px;
+          background: var(--color3);
+          position: relative;
+          bottom: 15%;
+          right: 30%;
+          animation-delay: 15s;
+      }
+
+      .hexagon-2:before,
+      .hexagon-2:after {
+          content: "";
+          position: absolute;
+          width: 0;
+          border-left: 12px solid transparent;
+          border-right: 12px solid transparent;
+      }
+
+      .hexagon-2:before {
+          bottom: 100%;
+          border-bottom: 7px solid var(--color3);
+      }
+
+      .hexagon-2:after {
+          top: 100%;
+          border-top: 7px solid var(--color3);
+      }
+
+      .diamond-1 {
+          width: 20px;
+          height: 20px;
+          background: var(--color4);
+          transform: rotate(45deg);
+          top: 70%;
+          left: 70%;
+          animation-delay: 8s;
+      }
+
+      .diamond-2 {
+          width: 15px;
+          height: 15px;
+          background: var(--color2);
+          transform: rotate(45deg);
+          top: 25%;
+          right: 45%;
+          animation-delay: 12s;
+      }
+
+      @keyframes rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+
+      /* Estilos de la pantalla de carga */
+      .loading-screen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background: rgba(0, 170, 212, 0.9); /* Fondo semi-transparente para el contenido */
+          z-index: 999;
+          color: var(--color1);
+          text-align: center;
+          opacity: 1;
+          transition: opacity 0.5s ease-out;
+      }
+
+      .loading-screen.hidden {
+          opacity: 0;
+          pointer-events: none; /* Permite interactuar con el contenido debajo una vez oculto */
+      }
+
+      .loading-text {
+          font-size: 2.5rem;
+          font-weight: 600;
+          margin-bottom: 30px;
+          text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+          animation: fadeInText 1.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes fadeInText {
+          0% { opacity: 0.7; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0px); }
+      }
+
+      /* Spinner */
+      .spinner {
+          border: 8px solid rgba(255, 255, 255, 0.3);
+          border-top: 8px solid var(--color1);
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          animation: spin 1.5s linear infinite;
+      }
+
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+
+      /* Contenido de ejemplo (se mostrará después de la carga) */
+      .content {
+          display: none; /* Oculto por defecto */
+          padding: 20px;
+          text-align: center;
+          color: var(--text-color);
+      }
+
+      /* Responsive Design para la pantalla de carga */
+      @media (max-width: 768px) {
+          .loading-text {
+              font-size: 2rem;
+          }
+          .spinner {
+              width: 50px;
+              height: 50px;
+              border-width: 6px;
+          }
+      }
+
+      @media (max-width: 480px) {
+          .loading-text {
+              font-size: 1.5rem;
+          }
+          .spinner {
+              width: 40px;
+              height: 40px;
+              border-width: 5px;
+          }
+      }
+
+      /* Optimizaciones para dispositivos con movimiento reducido */
+      @media (prefers-reduced-motion: reduce) {
+          .wave,
+          .circle,
+          .line,
+          .particle,
+          .shape,
+          .loading-text,
+          .spinner {
+              animation: none !important;
+          }
+      }
+  </style>
+</head>
+<body>
+  <div class="background-container">
+      <div class="wave wave-1"></div>
+      <div class="wave wave-2"></div>
+      <div class="wave wave-3"></div>
+      <div class="floating-circles">
+          <div class="circle circle-1"></div>
+          <div class="circle circle-2"></div>
+          <div class="circle circle-3"></div>
+          <div class="circle circle-4"></div>
+          <div class="circle circle-5"></div>
+          <div class="circle circle-6"></div>
+      </div>
+      <div class="connection-lines">
+          <div class="line line-1"></div>
+          <div class="line line-2"></div>
+          <div class="line line-3"></div>
+      </div>
+      <div class="particles">
+          <div class="particle particle-1"></div>
+          <div class="particle particle-2"></div>
+          <div class="particle particle-3"></div>
+          <div class="particle particle-4"></div>
+          <div class="particle particle-5"></div>
+          <div class="particle particle-6"></div>
+          <div class="particle particle-7"></div>
+          <div class="particle particle-8"></div>
+      </div>
+      <div class="geometric-shapes">
+          <div class="shape triangle-1"></div>
+          <div class="shape triangle-2"></div>
+          <div class="shape hexagon-1"></div>
+          <div class="shape hexagon-2"></div>
+          <div class="shape diamond-1"></div>
+          <div class="shape diamond-2"></div>
+      </div>
+  </div>
+
+  <div id="loadingScreen" class="loading-screen">
+      <div class="loading-text">ESTAMOS PROCESANDO TU PERFIL...</div>
+      <div class="spinner"></div>
+  </div>
+
+  <div id="mainContent" class="content">
+      <h1>¡Bienvenido a !FC!</h1>
+      <p>Swipea para arriba y comenzá a explorar.</p>
+  </div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const loadingScreen = document.getElementById('loadingScreen');
+          const mainContent = document.getElementById('mainContent');
+
+          // Simula un tiempo de carga
+          setTimeout(() => {
+              loadingScreen.classList.add('hidden');
+              loadingScreen.addEventListener('transitionend', () => {
+                  loadingScreen.style.display = 'none';
+                  mainContent.style.display = 'block';
+                  document.body.style.overflowY = 'auto'; // Habilita el scroll si es necesario
+                  // Redirige a la página principal
+                  window.location.href = 'index.html'; // Cambia '/dashboard' por la URL de tu página principal
+              }, { once: true });
+          }, 3000); // La pantalla de carga se mostrará durante 3 segundos
+      });
+  </script>
+</body>
+</html>

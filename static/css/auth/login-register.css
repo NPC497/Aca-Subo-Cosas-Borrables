@@ -1,0 +1,386 @@
+/* Paleta de colores */
+:root {
+  --bg-color: #f0f8ff;
+  --container-bg: #fff;
+  --text-color: #0a0331;
+  --primary-color: #00a9d4;
+  --secondary-color: #103594;
+  --accent-color: #0a0331;
+  --border-color: #00a9d4;
+  --box-shadow: 0px 10px 30px rgba(0, 169, 212, 0.2);
+  --illustration-bg: linear-gradient(to left, #00a9d4 55%, #103594);
+  --wave-color-1: rgba(0, 169, 212, 0.1);
+  --wave-color-2: rgba(16, 53, 148, 0.08);
+  --wave-color-3: rgba(0, 169, 212, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Patrón de ondas animadas de fondo */
+.wave-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--wave-color-1), transparent);
+  animation: wave-move 8s ease-in-out infinite;
+}
+
+.wave1 {
+  background: linear-gradient(90deg, transparent, var(--wave-color-1), transparent);
+  animation-delay: 0s;
+  animation-duration: 8s;
+}
+
+.wave2 {
+  background: linear-gradient(90deg, transparent, var(--wave-color-2), transparent);
+  animation-delay: -2s;
+  animation-duration: 12s;
+}
+
+.wave3 {
+  background: linear-gradient(90deg, transparent, var(--wave-color-3), transparent);
+  animation-delay: -4s;
+  animation-duration: 16s;
+}
+
+@keyframes wave-move {
+  0% {
+    transform: translateX(-100%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(100%) rotate(180deg);
+  }
+  100% {
+    transform: translateX(-100%) rotate(360deg);
+  }
+}
+
+.container {
+  display: flex;
+  background: var(--container-bg);
+  border-radius: 20px;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  width: 90%;
+  max-width: 900px;
+  margin: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Container más ancho para registro */
+.register-container {
+  max-width: 1100px;
+}
+
+.illustration {
+  width: 40%;
+  background: var(--illustration-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.illustration::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.illustration img {
+  width: 80%;
+  max-width: 300px;
+  animation: fadeIn 1s ease-in-out;
+  transition: all 0.3s ease;
+  object-fit: contain;
+  cursor: pointer;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+}
+
+.illustration img:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.login-box {
+  width: 60%;
+  padding: 40px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 30px;
+  font-size: clamp(40px, 4vw, 32px);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Container para nombre y apellido */
+.name-container {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.input-box {
+  position: relative;
+  margin: 15px 0;
+  width: 100%;
+}
+
+.input-box.half-width {
+  width: calc(50% - 7.5px);
+  margin: 15px 0;
+}
+
+.input-box input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 45px;
+  border: 2px solid transparent;
+  border-bottom: 2px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  color: var(--text-color);
+  backdrop-filter: blur(5px);
+}
+
+.input-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary-color);
+  transition: all 0.3s ease;
+}
+
+.input-box input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.input-box input:focus {
+  border-color: var(--secondary-color);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 169, 212, 0.2);
+}
+
+.forgot-password {
+  text-align: right;
+  margin: 10px 0 20px;
+  width: 100%;
+}
+
+.forgot-password a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.forgot-password a:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.register-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.register-link a:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.login-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 250px;
+  margin: 10px auto;
+  text-transform:capitalize;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 15px rgba(0, 169, 212, 0.3);
+}
+
+.login-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 169, 212, 0.4);
+  background: var(--secondary-color);
+}
+
+.login-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-box {
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.animate-img {
+  animation: fadeIn 1s ease-out both;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .container {
+    max-width: 600px;
+  }
+
+  .register-container {
+    max-width: 700px;
+  }
+
+  .login-box {
+    padding: 30px 20px;
+  }
+
+  .name-container {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .input-box.half-width {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    max-width: 400px;
+  }
+
+  .register-container {
+    max-width: 450px;
+  }
+
+  .illustration {
+    width: 100%;
+    padding: 30px;
+  }
+
+  .illustration img {
+    max-width: 200px;
+  }
+
+  .login-box {
+    width: 100%;
+    padding: 30px 20px;
+  }
+
+  h2 {
+    margin-bottom: 25px;
+  }
+
+  .input-box {
+    margin: 12px 0;
+  }
+
+  .input-box input {
+    padding: 12px 40px;
+  }
+
+  .forgot-password {
+    margin: 15px 0 25px;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    margin: 10px;
+    width: 95%;
+  }
+
+  .illustration {
+    padding: 20px;
+  }
+
+  .login-box {
+    padding: 20px 15px;
+  }
+
+  .input-box input {
+    padding: 10px 35px;
+    font-size: 14px;
+  }
+
+  .login-btn {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+}

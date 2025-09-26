@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Acciones recientes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/actividad.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Fondo animado con patrones -->
+  <div class="background-container">
+    <!-- Ondas animadas -->
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    
+    <!-- Círculos flotantes -->
+    <div class="floating-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+      <div class="circle circle-5"></div>
+      <div class="circle circle-6"></div>
+    </div>
+    
+    <!-- Líneas de conexión animadas -->
+    <div class="connection-lines">
+      <div class="line line-1"></div>
+      <div class="line line-2"></div>
+      <div class="line line-3"></div>
+    </div>
+    
+    <!-- Partículas brillantes -->
+    <div class="particles">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+      <div class="particle particle-7"></div>
+      <div class="particle particle-8"></div>
+    </div>
+    
+    <!-- Formas geométricas decorativas -->
+    <div class="geometric-shapes">
+      <div class="shape triangle-1"></div>
+      <div class="shape triangle-2"></div>
+      <div class="shape hexagon-1"></div>
+      <div class="shape hexagon-2"></div>
+      <div class="shape diamond-1"></div>
+      <div class="shape diamond-2"></div>
+    </div>
+  </div>
+
+  <!-- Header con navegación responsive -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="user-menu">
+        <!-- Enlace al perfil -->
+        <a href="{{ url_for('miPerfil') }}" class="profile-link" title="Mi Perfil">
+          <img src="{{ url_for('static', filename='img/perfil/' + current_user.foto_perfil) if current_user and current_user.foto_perfil else 'https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527_1280.png' }}" alt="Avatar de usuario">
+          <span class="profile-text">Mi Perfil</span>
+        </a>
+      </div>
+      <!-- Logo -->
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+      </div>
+    </div>
+  </header>
+
+ <main class="main-content">
+    <!-- Título de la página -->
+    <section class="page-header">
+      <a class="back-btn" href="{{ url_for('index') }}">
+        <i class="fas fa-arrow-left"></i>
+        <span> Volver</span>
+      </a>
+      <div class="container">
+        <h1><i class="fas fa-chart-line"></i> Mis acciones</h1>
+      </div>
+    </section>
+
+    <!-- Filtros y estadísticas -->
+    <section class="activity-stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="loginCount">12</h3>
+              <p>Inicios de sesión</p>
+              <span class="stat-period">Este mes</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-door-open"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="doorAccessCount">28</h3>
+              <p>Accesos a puertas</p>
+              <span class="stat-period">Este mes</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="lastAccess">Puerta Pepe</h3>
+              <p>Último acceso</p>
+              <span class="stat-period">14:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filtros de actividad -->
+    <section class="activity-filters">
+      <div class="container">
+        <div class="filters-container">
+          <div class="filter-group">
+            <label for="dateFilter">Período:</label>
+            <select id="dateFilter" class="filter-select">
+              <option value="today">Hoy</option>
+              <option value="week">Esta semana</option>
+              <option value="month">Este mes</option>
+              <option value="all" selected>Todo el historial</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="typeFilter">Tipo de acción:</label>
+            <select id="typeFilter" class="filter-select">
+              <option value="all">Todas las acciones</option>
+              <option value="login">Inicios de sesión</option>
+              <option value="door">Accesos a puertas</option>
+              <option value="profile">Cambios de perfil</option>
+              <option value="system">Actividad del sistema</option> <!-- ESTA OPCION PARA EL USUARIO NO SERA VISTA -->
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <button id="refreshButton" class="refresh-btn">
+              <i class="fas fa-sync-alt"></i>
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lista de actividades -->
+    <section class="activity-timeline">
+      <div class="container">
+        <div class="timeline-header">
+          <h2>Historial de Acciones</h2>
+          <div class="timeline-info">
+            <span id="activityCount">Mostrando 15 acciones</span>
+          </div>
+        </div>
+        
+        <div class="timeline-container" id="timelineContainer">
+          <!-- Las actividades se cargarán dinámicamente aquí -->
+        </div>
+        
+        <!-- Botón para cargar más -->
+        <div class="load-more-container">
+          <button id="loadMoreButton" class="load-more-btn">
+            <i class="fas fa-chevron-down"></i>
+            Cargar más
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+  </main>
+
+  <!-- Modal de confirmación para cerrar sesión -->
+  <div id="logoutModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Confirmar cierre de sesión</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" id="cancelLogout">Cancelar</button>
+        <button class="btn btn-confirm" id="confirmLogout">Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay para el modal -->
+  <div id="modalOverlay" class="modal-overlay"></div>
+
+  <script src="{{ url_for('static', filename='js/shared/actividad.js') }}"></script>
+</body>
+</html>

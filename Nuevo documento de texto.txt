@@ -1,0 +1,62 @@
+﻿Se cambio en getdniporid que estaba la logica duplicada (HECHO)
+cambiar en actividades de todos los usuarios que si el usuario no es admin solo aparezcan las actividades relacionadas a puertas, en cambio si tiene rol master (id 3) se muestre las actividades del sistema más el de las puertas
+si el id de rol es 3 se debe mostrar todas las cards (HECHO)
+Mejorar estilo de todas las tablas
+Ver filtros en Mis Acciones
+
+Vista dinamica cuando asignar permisos en 1 y id usuario no es 1. Cambiar en navbar tambien. (HECHO)
+Paginacion no hecha
+Cuando una persona se loguee, registre, logout, cambie su nombre de usuario, contraseña, foto de perfil, etc deberá ser ingresado en la tabla tracking de la base de datos (HECHO)
+
+id 1 por defecto será de rol Master
+el hash que se manda a base de datos en el campo nfc_code no es el mismo que se guarda en el nfc cuando es grabado 
+crea rol, no tiene acceso a todas las puertas, aparece como admin la misma persona que lo recibe
+cuando le das a permiso, editar que se autocomplete como nombre y apellido en gris o borrarlo directamente
+Filtro por id en gestion de permisos
+Invertido el estado en puertas
+
+. Registrar puerta no funciona (se debe guardar en la tabla door) (HECHO)
+. Buscar por DNI en Gestión de Permisos, boton Otorgar Permisos, 
+modal Otorgar Permisos no funciona (HECHO, se volvio a romper TAT, HECHO)
+. Desharcodear el modal "Usuarios con acceso" en la Gestión de Puertas (HECHO, no funciona correctamente TAT)
+. Cada que intento ingresar a alta de usuarios me redirecciona al login (XD) (ARREGLADO)
+. APScheduler (HECHO)
+. Se rompio el ingresar una imagen en el modal de creacion de puertas (No se inserta en base de datos, HECHO, ARREGLADO NO SE TAT)
+. Cuando se crea una puerta el campo door_isOpen debe estar en 0 (HECHO)
+. Cambiar en la creacion de la puerta para que el usuario no elija en el modal el estado, sino que por defecto sea 0 (HECHO)
+. Quitar del modal de creacion de puertas que se pueda seleccionar activa o desactiva (HECHO)
+. Agregar la opcion "Permanente" en el select de Otorgar Permisos
+. Vistas dinamicas (HECHO)
+. Si el usuario tiene el campo nfc_code vacio, en lugar de ser mostrado el index, será redireccionado a una pantalla que dirá "Un administrador está revisando su cuenta. En breves será informado sobre el estado de su cuenta" (HECHO)
+. Agregar todos los editar
+. Editar puertas (HECHO)
+. Editar roles (HECHO)
+. En editar puerta hacer que la imagen que estaba se muestre el nombre (Si es que habia una)
+. Agregar todos los eliminar
+. Eliminar puertas (HECHO)
+. Eliminar roles (HECHO)
+. Ver tema reenvio de codigo
+. Ver como hacer para cuando un rol tiene Acceso a Todas las Puertas en "si", 
+cuando se cree una nueva puerta este rol tambien tenga acceso a la misma (HECHOOOO (NO SE COMO(SI PREGUNTAR DECIR "si")))
+. Foto de perfil se guarde automaticamente sin apretar boton Guardar Cambios
+. Agregar ojo a contraseña Login y Registro
+. Validar que el Nombre y Apellido tenga al menos tres caracteres en el perfil,
+en el login y registro
+. Validar que no se puedan ingresar emojis en el perfil, en el login y registro
+. Validar que los elementos HTML (< y >) sean transformados en sus codigos para 
+evitar que rompan la estetica del sitio
+. Lista blanca de caracteres ASCII
+. Ver si puedo hacer que se guarde en sesión la opinion cuando el usuario presiona 
+el boton dar de baja
+
+. En puertas.py solo se debe recibir nombre, estado e imagen y no nombre, ubicacion, descripcion y estado (HECHO)
+
+. Proteger los datos en todos los api para que sean inaccesibles a través del navegador por usuarios malintencionados
+
+
+
+
+
+
+Necesito que hagas funcionar el boton para editar permiso.
+NO CAMBIES ABSOLUTAMENTE NADA MAS DE LO ESTRICTAMENTE NECESARIO. NO DES CASCADE ERRORRRRRRRRRRRRR

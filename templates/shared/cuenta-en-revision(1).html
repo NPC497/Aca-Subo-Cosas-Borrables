@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuenta en Revisión</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/index.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .review-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+    }
+    
+    .review-card {
+      background: var(--container-bg);
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0px 8px 20px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    .review-icon {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(0, 169, 212, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+      animation: pulse 2s infinite;
+    }
+    
+    .review-icon i {
+      font-size: 2.5rem;
+      color: var(--color2);
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .review-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--color3);
+    }
+    
+    .review-message {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+    }
+    
+    .review-submessage {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: var(--text-color);
+      opacity: 0.8;
+    }
+    
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(45deg, var(--color2), var(--color3));
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .logout-btn:hover {
+      background: var(--color3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(28, 49, 102, 0.3);
+    }
+    
+    .logout-btn i {
+      font-size: 16px;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .review-container {
+        padding: 1rem;
+      }
+      
+      .review-card {
+        padding: 2rem;
+      }
+      
+      .review-title {
+        font-size: 1.5rem;
+      }
+      
+      .review-message {
+        font-size: 1rem;
+      }
+      
+      .review-icon {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .review-icon i {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .review-card {
+        padding: 1.5rem;
+      }
+      
+      .review-title {
+        font-size: 1.3rem;
+      }
+      
+      .review-icon {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .review-icon i {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fondo animado con patrones (igual al index) -->
+  <div class="background-container">
+    <!-- Ondas animadas -->
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    
+    <!-- Círculos flotantes -->
+    <div class="floating-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+      <div class="circle circle-5"></div>
+      <div class="circle circle-6"></div>
+    </div>
+    
+    <!-- Líneas de conexión animadas -->
+    <div class="connection-lines">
+      <div class="line line-1"></div>
+      <div class="line line-2"></div>
+      <div class="line line-3"></div>
+    </div>
+    
+    <!-- Partículas brillantes -->
+    <div class="particles">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+      <div class="particle particle-7"></div>
+      <div class="particle particle-8"></div>
+    </div>
+    
+    <!-- Formas geométricas decorativas -->
+    <div class="geometric-shapes">
+      <div class="shape triangle-1"></div>
+      <div class="shape triangle-2"></div>
+      <div class="shape hexagon-1"></div>
+      <div class="shape hexagon-2"></div>
+      <div class="shape diamond-1"></div>
+      <div class="shape diamond-2"></div>
+    </div>
+  </div>
+
+  <div class="review-container">
+    <div class="review-card">
+      <div class="review-icon">
+        <i class="fas fa-hourglass-half"></i>
+      </div>
+      
+      <h1 class="review-title">Cuenta en Revisión</h1>
+      
+      <p class="review-message">
+        Un administrador está revisando su cuenta y la habilitará a la brevedad. Será informado sobre el estado de su cuenta.
+      </p>
+      
+      <p class="review-submessage">
+        Mientras tanto, puede cerrar sesión y volver a intentar más tarde.
+      </p>
+      
+      <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        Cerrar Sesión
+      </a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/index.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Fondo animado con patrones -->
+  <div class="background-container">
+    <!-- Ondas animadas -->
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    
+    <!-- Círculos flotantes -->
+    <div class="floating-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+      <div class="circle circle-5"></div>
+      <div class="circle circle-6"></div>
+    </div>
+    
+    <!-- Líneas de conexión animadas -->
+    <div class="connection-lines">
+      <div class="line line-1"></div>
+      <div class="line line-2"></div>
+      <div class="line line-3"></div>
+    </div>
+    
+    <!-- Partículas brillantes -->
+    <div class="particles">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+      <div class="particle particle-7"></div>
+      <div class="particle particle-8"></div>
+    </div>
+    
+    <!-- Formas geométricas decorativas -->
+    <div class="geometric-shapes">
+      <div class="shape triangle-1"></div>
+      <div class="shape triangle-2"></div>
+      <div class="shape hexagon-1"></div>
+      <div class="shape hexagon-2"></div>
+      <div class="shape diamond-1"></div>
+      <div class="shape diamond-2"></div>
+    </div>
+  </div>
+
+  <!-- Header con navegación responsive -->
+  <header class="main-header">
+    <div class="header-container">
+      <!-- Menú de usuario simplificado -->
+      <div class="user-menu">
+        <!-- Enlace al perfil -->
+        <a href="{{ url_for('miPerfil') }}" class="profile-link" title="Mi Perfil">
+          <img src="{{ url_for('static', filename=usuario.foto) if usuario and usuario.foto else url_for('static', filename='img/shared/default.jpeg') }}" alt="Avatar de usuario">
+          <span class="profile-text">Mi Perfil</span>
+        </a>
+        <a href="{{ url_for('misPermisos') }}" class="profile-link" title="Mis Permisos">
+          <span class="profile-text">Mis permisos</span>
+        </a>
+        
+        <!-- Botón de cerrar sesión -->
+        <button class="logout-button" id="logoutButton" title="Cerrar Sesión">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="logout-text">Salir</span>
+        </button>
+      </div>
+      <!-- Logo -->
+      <div class="logo">
+        <img src="../../static/img/shared/logoabiertosinfondo.png" width="60" alt="Logo">
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="cards-section">
+      <div class="container" style="height: 100%;">
+        <div class="cards-grid">
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-user-tag"></i>
+            </div>
+            <p>Agregá y asigná roles a los usuarios.</p>
+            <a href="{{ url_for('roles') }}" class="card-link">Roles</a>
+          </div>
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <p>Visualizá los usuarios del sistema, crear, modificar o eliminar registros.</p>
+            <a href="{{ url_for('usuarios') }}" class="card-link">Usuarios</a>
+          </div>
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-user-clock"></i>
+            </div>
+            <p>Seleccioná los usuarios que desees agregar al sistema.</p>
+            <a href="{{ url_for('usuarios_temporarios') }}" class="card-link">Alta de usuarios</a>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-door-open"></i>
+            </div>
+            <p>Ingresá para ver las puertas del sistema, crear, modificar o eliminarlas.</p>
+            <a href="{{ url_for('puerta') }}" class="card-link">Puertas</a>
+          </div>
+
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-key"></i>
+            </div>
+            <p>Consultá los permisos. Podés crearlos, modificarlos o eliminarlos.</p>
+            <a href="{{ url_for('permisos') }}" class="card-link">Gestión de Permisos</a>
+          </div>
+          
+          <div class="card animate-box">
+            <div class="card-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <p>Revisá las actividades de todos los usuarios.</p>
+            <a href="{{ url_for('actividad') }}" class="card-link">Actividad</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de actividad reciente responsive -->
+    <section class="recent-activity">
+      <div class="container">
+        <h2>Acciones recientes</h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <div class="activity-details">
+              <h4>Inicio de sesión</h4>
+              <span class="activity-time">Hace 2 horas</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i class="fas fa-user-edit"></i>
+            </div>
+            <div class="activity-details">
+              <h4>Perfil actualizado</h4>
+              <span class="activity-time">Ayer</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i class="fas fa-cog"></i>
+            </div>
+            <div class="activity-details">
+              <h4>Configuración modificada</h4>
+              <span class="activity-time">Hace 3 días</span>
+            </div>
+          </div>
+        </div>
+        <div class="activity-link">
+          <a href="{{ url_for('actividadesRecientes') }}">Más información</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de confirmación para cerrar sesión -->
+  <div id="logoutModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Confirmar cierre de sesión</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" id="cancelLogout">Cancelar</button>
+        <button class="btn btn-confirm" id="confirmLogout">Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay para el modal -->
+  <div id="modalOverlay" class="modal-overlay"></div>
+
+  <script src="{{ url_for('static', filename='js/shared/index.js') }}"></script>
+</body>
+</html>

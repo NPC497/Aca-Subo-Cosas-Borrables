@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Contraseña</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/ClaveStyle.css') }}"> 
+</head>
+<body>
+    <!-- Patrón de ondas animadas -->
+    <div class="wave-background">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <div class="container">
+        <div class="illustration">
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+            </div>
+        </div>
+        <div class="login-box animate-box">
+            <!-- Paso 1: Solicitar Email -->
+            <div id="paso1" class="form-step">
+                <div class="text-center mb-4">
+                    <i class="fas fa-key icon-large text-primary mb-3"></i>
+                    <h2 class="title-main">Recuperar Contraseña</h2>
+                    <p class="subtitle">Ingresa tu correo electrónico y te enviaremos un código para restablecer tu contraseña.</p>
+                </div>
+                
+                <form id="formularioEmail" novalidate>
+                    <div class="input-box">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="campoEmail" name="email" placeholder="Correo electrónico" required autocomplete="email">
+                        <div class="invalid-feedback">
+                            Por favor ingrese un correo electrónico válido.
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        <span class="loading-indicator d-none">
+                            <i class="fas fa-spinner fa-spin me-2"></i>
+                            Enviando código...
+                        </span>
+                        <span class="button-text">Enviar Código</span>
+                    </button>
+                </form>
+
+                <div class="register-link">
+                    <a href="login.html" class="link-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Volver al inicio de sesión
+                    </a>
+                </div>
+            </div>
+
+            <!-- Paso 2: Verificar Código -->
+            <div id="paso2" class="form-step hidden">
+                <div class="text-center mb-4">
+                    <i class="fas fa-envelope-open icon-large text-primary mb-3"></i>
+                    <h2 class="title-main">Verificar Código</h2>
+                    <p class="subtitle">Hemos enviado un código de 6 dígitos a <strong id="emailEnviado"></strong></p>
+                </div>
+                
+                <form id="formularioCodigo" novalidate>
+                    <div class="input-box">
+                        <i class="fas fa-hashtag"></i>
+                        <input type="text" id="campoCodigo" name="codigo" placeholder="000000" maxlength="6" required autocomplete="one-time-code" class="code-input">
+                        <div class="invalid-feedback">
+                            Por favor ingrese el código de 6 dígitos.
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <p class="mb-2">
+                            <span class="timer-text">¿No recibiste el código? </span>
+                        </p>
+                        <button type="button" class="login-btn" id="botonReenviar" disabled>
+                            Reenviar código (<span id="contador">60</span>s)
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        <span class="loading-indicator-code d-none">
+                            <i class="fas fa-spinner fa-spin me-2"></i>
+                            Verificando...
+                        </span>
+                        <span class="button-text-code">Verificar Código</span>
+                    </button>
+
+                    <button type="button" class="login-btn secondary-btn" onclick="volverPaso1()">
+                        Cambiar correo electrónico
+                    </button>
+                </form>
+            </div>
+
+            <!-- Paso 3: Éxito -->
+            <div id="paso3" class="form-step hidden">
+                <div class="text-center">
+                    <i class="fas fa-check-circle icon-success icon-large mb-3"></i>
+                    <h2 class="title-main">¡Código Verificado!</h2>
+                    <div class="message-success p-3 mb-4">
+                        <p class="mb-0">Tu código ha sido verificado correctamente. Ahora puedes crear una nueva contraseña.</p>
+                    </div>
+                    
+                    <button type="button" class="login-btn" onclick="redirigirNuevaContrasena()">
+                        Crear Nueva Contraseña
+                    </button>
+
+                    <div class="link-bottom">
+                        <a href="login.html" class="link-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Volver al inicio de sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 4: Nueva Contraseña -->
+            <div id="paso4" class="form-step hidden">
+                <div class="text-center mb-4">
+                    <i class="fas fa-lock icon-large text-primary mb-3"></i>
+                    <h2 class="title-main">Nueva Contraseña</h2>
+                    <p class="subtitle">Ingrese una nueva contraseña segura.</p>
+                </div>
+                
+                <form id="formularioNuevaContrasena" novalidate>
+                    <div class="input-box">
+                        <i class="fas fa-key"></i>
+                        <input 
+                            type="password" 
+                            id="campoContrasena"
+                            name="contrasena"
+                            placeholder="Nueva contraseña"
+                            required
+                            minlength="8"
+                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                            title="La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."
+                        >
+                        <div class="invalid-feedback">
+                            La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.
+                        </div>
+                    </div>
+                    
+                    <div class="input-box">
+                        <i class="fas fa-check-circle"></i>
+                        <input 
+                            type="password" 
+                            id="campoConfirmarContrasena"
+                            name="confirmarContrasena"
+                            placeholder="Confirmar nueva contraseña"
+                            required
+                        >
+                        <div class="invalid-feedback">
+                            Las contraseñas no coinciden.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <span class="loading-indicator-password d-none">
+                            <i class="fas fa-spinner fa-spin me-2"></i>
+                            Cambiando contraseña...
+                        </span>
+                        <span class="button-text-password">
+                            <i class="fas fa-save me-2"></i> Guardar
+                        </span>
+                    </button>
+                    
+                    <button type="button" class="login-btn secondary-btn" onclick="volverPaso2()">
+                        Volver a verificar código
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+  <script src="{{ url_for('static', filename='js/auth/CambiarClave.js') }}"></script>
+</body>
+</html>

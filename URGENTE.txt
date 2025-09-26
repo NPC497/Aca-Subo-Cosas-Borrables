@@ -1,0 +1,11 @@
+Gestion de permisos se muestre por id de usuario logueado y rol (Arreglar boton editar, dni, nombre completo no se deben poder cambiar, si se cambia el tiempo que se cambie realmente)
+Nombre Actividades de todos los usuarios aparece aun si no soy master
+Filtros no funcionan, quitar boton filtrar y hacerlos dinamicos
+Agregar logo a la navbar (HECHO)
+Registrar puerta no funciona, nueva bdd
+Si tenes permiso por rol, no se puede asignar un permiso temporal o permanente en Gestion de Permisos
+Acceso a todas las puertas opcional
+Aparece acceso permanente en Mis Permisos cuando el permiso es temporal
+Eliminar permisos modal descentrado en registrar puerta
+Cuando se intenta borrar el registro, por rol no deja, se debe aclarar que es por rol (tira error id)
+Agregar ojos a register y login

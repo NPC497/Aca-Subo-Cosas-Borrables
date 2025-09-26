@@ -1,0 +1,78 @@
+:root {
+  --color1: #fff;        /* Blanco */
+  --color2: #00a9d4;     /* Azul claro */
+  --color3: #1c3166;     /* Azul oscuro */
+  --color4: #240047;     /* Púrpura oscuro */
+  --color5: #1c0021;     /* Púrpura muy oscuro */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--color1);
+    font-family: Arial, sans-serif;
+}
+
+.loading-container {
+    position: relative;
+    width: 300px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.squares-wrapper {
+    position: relative;
+    width: 90%;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 4px;
+}
+
+.square {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: var(--color2);
+    border-radius: 2px;
+    top: 2.5px;
+    right: -20px; /* Comienza fuera del contenedor por la derecha */
+}
+
+@keyframes moveLeft {
+    0% {
+        right: -20px; /* Comienza fuera del contenedor por la derecha */
+    }
+    100% {
+        right: calc(100% + 20px); /* Termina fuera del contenedor por la izquierda */
+    }
+}
+
+.image-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out;
+  pointer-events: none;
+}
+.image-container img.active {
+  opacity: 1;
+  pointer-events: auto;
+}

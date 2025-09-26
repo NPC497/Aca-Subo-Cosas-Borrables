@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Alta de Usuarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/tables.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header-table">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+            </div>
+        </div>
+    </header>
+
+    <!-- Overlay para cuando el menú está abierto -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navegación lateral -->
+    <nav class="side-nav-table" id="side-nav-table">
+        <div class="nav-content">
+            <div class="nav-links-main">
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                  <i class='fas fa-home'></i>
+                  <span>Inicio</span>
+                </a>
+                <a href="{{ url_for('roles') }}" class="nav-link" data-name="roles">
+                  <i class='fas fa-user-tag'></i>
+                  <span>Roles</span>
+                </a>
+                <a href="{{ url_for('usuarios') }}" class="nav-link" data-name="usuarios">
+                    <i class='fas fa-users'></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="{{ url_for('usuarios_temporarios') }}" class="nav-link active" data-name="usuarios-temporarios">
+                    <i class='fas fa-user-clock'></i>
+                    <span>Alta de Usuarios</span>
+                </a>
+                <a href="{{ url_for('puerta') }}" class="nav-link" data-name="puertas">
+                    <i class='fas fa-door-open'></i>
+                    <span>Puertas</span>
+                </a>
+                <a href="{{ url_for('permisos') }}" class="nav-link" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                <a href="{{ url_for('actividad') }}" class="nav-link" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container animate-box">
+        <div class="abm-box">
+            <h1 class="title-abm">Gestión de Alta de Usuarios</h1>
+            <div class="search-container">
+                <div class="input-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar usuario temporal...">
+                </div>
+                <div class="select-box">   
+                    <select id="tempUserStatusFilter">
+                        <option value="all">Todos los Estados</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="confirmed">Confirmado</option>
+                    </select>
+                </div>
+                <button class="btn-filter">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                <a href="{{ url_for('configurador_nfc') }}" class="btn-filter" style="text-decoration: none;">
+                    <i class="fas fa-wifi"></i> Configurar Wifi
+                </a>
+            </div>
+            
+            <div class="table-container">
+                <table class="users-table" id="temporaryUsersTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre <i class="fas fa-sort"></i></th>
+                            <th>Apellido <i class="fas fa-sort"></i></th>
+                            <th>DNI <i class="fas fa-sort"></i></th>
+                            <th>Estado</i></th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr data-id="{{ usuario.ID_useratributes }}">
+                            <td>{{ usuario.name }}</td>
+                            <td>{{ usuario.surname }}</td>
+                            <td>{{ usuario.dni }}</td>
+                            <td><span class="badge {{ usuario.estado_clase }}">{{ usuario.estado_texto }}</span></td>
+                            <td class="actions">
+                                <button class="btn-action confirm" title="Confirmar" data-id="{{ usuario.ID_useratributes }}">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-action delete" title="Eliminar" data-id="{{ usuario.ID_useratributes }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px;">
+                                No hay usuarios temporales registrados
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación (reutilizado) -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar este usuario temporal?</p>
+                <p>Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDelete">Cancelar</button>
+                <button class="btn-danger" id="confirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nuevo Modal de Verificación de Dispositivo Conectado -->
+    <div id="nfcConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmación de Dispositivo NFC</h2>
+                <span class="close" id="closeNfcConfirmModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>¿Su dispositivo escritor NFC está conectado?</strong></p>
+                <p>Verifique que esté correctamente conectado a la corriente observando una luz indicadora.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="nfcConfirmNo">No</button>
+                <button class="btn-primary" id="nfcConfirmYes">Sí</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin/usuarios-temporarios.js') }}"></script>
+    <script>
+        // Configuración de URLs para JavaScript
+        window.APP_CONFIG = {
+            grabarNfcUrl: "{{ url_for('grabar_nfc') }}"
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Permisos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/tables.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header-table">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+            </div>
+        </div>
+    </header>
+
+    <!-- Overlay para cuando el menú está abierto -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navegación lateral -->
+    <nav class="side-nav-table" id="side-nav-table">
+        <div class="nav-content">
+            <div class="nav-links-main">
+                {% if is_admin %}
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                  <i class='fas fa-home'></i>
+                  <span>Inicio</span>
+                </a>
+                <a href="{{ url_for('roles') }}" class="nav-link" data-name="roles">
+                  <i class='fas fa-user-tag'></i>
+                  <span>Roles</span>
+                </a>
+                <a href="{{ url_for('usuarios') }}" class="nav-link" data-name="usuarios">
+                    <i class='fas fa-users'></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="{{ url_for('usuarios_temporarios') }}" class="nav-link" data-name="usuarios-temporarios">
+                    <i class='fas fa-user-clock'></i>
+                    <span>Alta de Usuarios</span>
+                </a>
+                <a href="{{ url_for('puerta') }}" class="nav-link" data-name="puertas">
+                    <i class='fas fa-door-open'></i>
+                    <span>Puertas</span>
+                </a>
+                <a href="{{ url_for('permisos') }}" class="nav-link active" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                <a href="{{ url_for('actividad') }}" class="nav-link" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('index') }}" class="nav-link" data-name="inicio">
+                    <i class='fas fa-home'></i>
+                    <span>Inicio</span>
+                </a>
+                {% if can_assign_permissions %}
+                <a href="{{ url_for('permisos') }}" class="nav-link active" data-name="permisos">
+                    <i class='fas fa-key'></i>
+                    <span>Permisos</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('actividad') }}" class="nav-link" data-name="actividad">
+                    <i class='fas fa-chart-line'></i>
+                    <span>Actividad</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container animate-box">
+        <div class="abm-box">
+            <h1 class="title-abm">Gestión de Permisos</h1>
+            <div class="search-container">
+                <div class="input-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar permiso...">
+                </div>
+                <div class="select-box">   
+                    <select id="permitDoorFilter">
+                        <option value="all">Todas las Puertas</option>
+                        <option value="puerta1">puerta1</option>
+                        <option value="puerta2">puerta2</option>
+                        <option value="puerta3">puerta3</option>
+                    </select>
+                </div>
+                <div class="select-box">   
+                    <select id="permitDoorFilter">
+                        <option value="all">Todos los estados</option>
+                        <option value="puerta1">Activa</option>
+                        <option value="puerta2">Inactiva</option>
+                    </select>
+                </div>
+                <button class="btn-filter">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+
+                {% if is_admin or can_assign_permissions %}
+                <button class="btn btn-primary" id="addPermitButton">
+                    <i class="fas fa-key"></i> Otorgar Permiso
+                </button>
+                {% endif %}
+            </div>
+            
+            <div class="table-container">
+                <table class="users-table" id="permitsTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="status">Estado de permiso<i class="fas fa-sort"></i></th>
+                            <th data-sort="door">Puerta<i class="fas fa-sort"></i></th>
+                            <th data-sort="admin">Administrador<i class="fas fa-sort"></i></th>
+                            <th data-sort="user">Usuario<i class="fas fa-sort"></i></th>
+                            <th data-sort="date">Fecha de permiso<i class="fas fa-sort"></i></th>
+                            <th data-sort="time">Tiempo<i class="fas fa-sort"></i></th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for permiso in permisos %}
+                        <tr data-permission-id="{{ permiso.id_permiso }}">
+                            <td class="hidden-id" style="display: none;">{{ permiso.id_permiso }}</td>
+                            <td><span class="status-badge {% if permiso.estado == 1 %}yes{% else %}no{% endif %}">{{ permiso.estado_texto }}</span></td>
+                            <td>{{ permiso.nombre_puerta }}</td>
+                            <td>{{ permiso.administrador }}</td>
+                            <td>{{ permiso.usuario }}</td>
+                            <td>{{ permiso.fecha_formateada }}</td>
+                            <td>{{ permiso.tiempo_texto }}</td>
+                            <td class="actions">
+                                <button class="btn-action delete" title="Eliminar" data-id="{{ permiso.id_permiso }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn-action edit" title="Modificar" data-id="{{ permiso.id_permiso }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px;">
+                                <i class="fas fa-info-circle"></i> No hay permisos registrados
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar este permiso?</p>
+                <p>Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDelete">Cancelar</button>
+                <button class="btn-danger" id="confirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar permiso -->
+    <div id="permitFormModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Modificar Permiso</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="permitForm">
+                    <div class="form-group">
+                        <label for="doorId">Puerta:</label>
+                        <select id="doorId" required>
+                            <option value="">Seleccione una puerta...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userDNI">DNI del Usuario:</label>
+                        <div class="autocomplete-container" style="position: relative;">
+                            <input type="text" id="userDNI" required placeholder="Ingrese DNI del usuario" maxlength="20" autocomplete="off">
+                            <div id="userSuggestions" class="autocomplete-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            </div>
+                        </div>
+                        <small id="userSearchStatus" style="color: #666; font-size: 12px;"></small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userName">Nombre:</label>
+                            <input type="text" id="userName" readonly style="background-color: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label for="userSurname">Apellido:</label>
+                            <input type="text" id="userSurname" readonly style="background-color: #f5f5f5;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeLimit">Tiempo del Permiso:</label>
+                        <select id="timeLimit" required>
+                            <option value="">Seleccione tiempo...</option>
+                            <option value="5">5 minutos</option>
+                            <option value="10">10 minutos</option>
+                            <option value="15">15 minutos</option>
+                            <option value="20">20 minutos</option>
+                            <option value="25">25 minutos</option>
+                            <option value="30">30 minutos</option>
+                            <option value="35">35 minutos</option>
+                            <option value="40">40 minutos</option>
+                            <option value="45">45 minutos</option>
+                            <option value="50">50 minutos</option>
+                            <option value="60">1 hora</option>
+                            <option value="90">1 hora 30 minutos</option>
+                            <option value="120">2 horas</option>
+                            <option value="permanent">Permanente</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelForm">Cancelar</button>
+                <button class="btn-primary" id="savePermit">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin/tables.js') }}"></script>
+</body>
+</html>

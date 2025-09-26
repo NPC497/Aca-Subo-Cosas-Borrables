@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grabar NFC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/tables.css') }}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #00a9d4, #0097b7);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .nfc-writer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            margin: auto;
+        }
+        .nfc-writer-container h1 {
+            color: #1c3166;
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .nfc-icon {
+            font-size: 90px;
+            color: #00a9d4;
+            margin-bottom: 35px;
+            transition: all 0.3s ease;
+        }
+        .nfc-icon.waiting {
+            animation: pulse 2s infinite;
+            color: #00a9d4;
+        }
+        .nfc-icon.detected {
+            animation: bounce 0.6s;
+            color: #f57c00;
+        }
+        .nfc-icon.writing {
+            animation: rotate 1s linear infinite;
+            color: #1976d2;
+        }
+        .nfc-icon.success {
+            animation: success-pulse 0.6s;
+            color: #28a745;
+        }
+        .nfc-icon.error {
+            animation: shake 0.5s;
+            color: #d32f2f;
+        }
+        .nfc-status {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 35px;
+        }
+        .nfc-progress-container {
+            width: 90%;
+            margin-top: 25px;
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 0.3s ease;
+        }
+        .nfc-progress-container.show {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+        .nfc-progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .nfc-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00a9d4, #0097b7);
+            border-radius: 6px;
+            transition: width 0.5s ease-in-out, background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .nfc-progress.detected {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+        }
+        .nfc-progress.writing {
+            background: linear-gradient(90deg, #2196f3, #1976d2);
+        }
+        .nfc-progress.writing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 1.5s infinite;
+        }
+        .nfc-progress.success {
+            background: linear-gradient(90deg, #4caf50, #28a745);
+        }
+        .nfc-progress.error {
+            background: linear-gradient(90deg, #f44336, #d32f2f);
+        }
+        .btn-primary, .btn-secondary {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #00a9d4;
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #1c3166;
+            transform: translateY(-2px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-15px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-8px); }
+        }
+        @keyframes success-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        /* Progress percentage text */
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75em;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .progress-text.show {
+            opacity: 1;
+        }
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            transition: right 0.3s ease;
+            max-width: 400px;
+            border-left: 4px solid;
+        }
+        .notification.success {
+            border-left-color: #4caf50;
+        }
+        .notification.error {
+            border-left-color: #f44336;
+        }
+        .notification.info {
+            border-left-color: #2196f3;
+        }
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .notification.success i { color: #4caf50; }
+        .notification.error i { color: #f44336; }
+        .notification.info i { color: #2196f3; }
+    </style>
+</head>
+<body>
+    <div class="nfc-writer-container">
+        <h1>Grabar Código NFC</h1>
+        <i class="fas fa-wifi nfc-icon" id="nfcIcon"></i>
+        <p class="nfc-status" id="nfcStatus">Iniciando sistema...</p>
+        
+        <div class="nfc-progress-container" id="nfcProgressContainer">
+            <div class="nfc-progress-bar">
+                <div class="nfc-progress" id="nfcProgress">
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button class="btn-primary" id="backButton">Volver a Usuarios</button>
+            <button class="btn-secondary" id="retryButton" style="display: none;">Reintentar</button>
+        </div>
+    </div>
+
+    <script>
+        // Obtener el ID del usuario de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id_useratributes = urlParams.get('id_useratributes');
+        
+        // Variables de estado
+        let estadoActual = 'idle';
+        let pollingInterval = null;
+        
+        // Elementos del DOM
+        const nfcIcon = document.getElementById("nfcIcon");
+        const nfcStatus = document.getElementById("nfcStatus");
+        const nfcProgress = document.getElementById("nfcProgress");
+        const nfcProgressContainer = document.getElementById("nfcProgressContainer");
+        const progressText = document.getElementById("progressText");
+        const backButton = document.getElementById("backButton");
+        const retryButton = document.getElementById("retryButton");
+        
+        // Función para mostrar notificaciones
+        function showNotification(message, type) {
+            const notification = document.createElement("div");
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.right = "20px";
+                setTimeout(() => {
+                    notification.style.right = "-400px";
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }, 100);
+        }
+        
+        // Función para actualizar la UI según el estado
+        function actualizarUI(estado, datos = {}) {
+            // No actualizar si es el mismo estado (evitar animaciones repetidas)
+            if (estadoActual === estado && estado !== 'writing') {
+                return;
+            }
+            
+            console.log(`Cambiando de estado: ${estadoActual} -> ${estado}`);
+            estadoActual = estado;
+            
+            // Remover todas las clases de animación del icono
+            nfcIcon.className = "fas fa-wifi nfc-icon";
+            nfcProgress.className = "nfc-progress";
+            
+            switch(estado) {
+                case 'waiting':
+                    nfcIcon.classList.add('waiting');
+                    nfcStatus.textContent = datos.mensaje || "Acerque la tarjeta NFC al lector...";
+                    nfcProgressContainer.classList.remove('show');
+                    nfcProgress.style.width = "0%";
+                    progressText.textContent = "0%";
+                    progressText.classList.remove('show');
+                    retryButton.style.display = "none";
+                    break;
+                    
+                case 'detected':
+                    nfcIcon.classList.add('detected');
+                    nfcStatus.textContent = datos.mensaje || "¡Tarjeta detectada! Preparando escritura...";
+                    // Mostrar barra de progreso cuando se detecta el NFC
+                    nfcProgressContainer.classList.add('show');
+                    nfcProgress.classList.add('detected');
+                    nfcProgress.style.width = "30%";
+                    progressText.textContent = "30%";
+                    progressText.classList.add('show');
+                    showNotification("Tarjeta NFC detectada", "info");
+                    break;
+                    
+                case 'writing':
+                    nfcIcon.classList.add('writing');
+                    nfcStatus.textContent = datos.mensaje || "Escribiendo datos en la tarjeta...";
+                    nfcProgress.classList.remove('detected');
+                    nfcProgress.classList.add('writing');
+                    // Animación progresiva de la barra
+                    setTimeout(() => {
+                        nfcProgress.style.width = "60%";
+                        progressText.textContent = "60%";
+                    }, 100);
+                    setTimeout(() => {
+                        nfcProgress.style.width = "80%";
+                        progressText.textContent = "80%";
+                    }, 500);
+                    break;
+                    
+                case 'success':
+                    nfcIcon.classList.add('success');
+                    nfcIcon.className = "fas fa-check-circle nfc-icon success";
+                    nfcStatus.textContent = datos.mensaje || "¡Grabación exitosa!";
+                    nfcProgress.classList.remove('writing');
+                    nfcProgress.classList.add('success');
+                    nfcProgress.style.width = "100%";
+                    progressText.textContent = "100%";
+                    showNotification("Tarjeta NFC grabada correctamente", "success");
+                    retryButton.style.display = "none";
+                    
+                    // Redirigir después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('usuarios_temporarios') }}?nfc_success=true&user_id=" + id_useratributes;
+                    }, 3000);
+                    break;
+                    
+                case 'failed':
+                    nfcIcon.classList.add('error');
+                    nfcIcon.className = "fas fa-times-circle nfc-icon error";
+                    nfcStatus.textContent = datos.mensaje || "Error al grabar la tarjeta";
+                    nfcProgress.classList.remove('writing');
+                    nfcProgress.classList.add('error');
+                    nfcProgress.style.width = "100%";
+                    progressText.textContent = "Error";
+                    showNotification("Error al grabar la tarjeta NFC", "error");
+                    retryButton.style.display = "inline-block";
+                    break;
+                    
+                case 'error':
+                    nfcIcon.classList.add('error');
+                    nfcStatus.textContent = datos.mensaje || "Error en el sistema";
+                    nfcProgressContainer.classList.remove('show');
+                    showNotification(datos.mensaje || "Error en el sistema", "error");
+                    retryButton.style.display = "inline-block";
+                    break;
+            }
+        }
+        
+        // Función para verificar el estado del NFC
+        async function verificarEstadoNFC() {
+            try {
+                const response = await fetch('/estadoNFC');
+                const data = await response.json();
+                
+                // Actualizar UI según el estado recibido
+                actualizarUI(data.estado, {
+                    mensaje: data.mensaje,
+                    progreso: data.progreso
+                });
+                
+                // Si el proceso terminó (éxito o fallo), detener el polling
+                if (data.estado === 'success' || data.estado === 'failed') {
+                    clearInterval(pollingInterval);
+                    pollingInterval = null;
+                }
+                
+            } catch (error) {
+                console.error("Error al verificar estado:", error);
+            }
+        }
+        
+        // Función para iniciar el proceso de grabación
+        async function iniciarGrabacion() {
+            if (!id_useratributes) {
+                actualizarUI('error', { mensaje: 'ID de usuario no válido' });
+                return;
+            }
+            
+            // Resetear visuales
+            nfcProgressContainer.classList.remove('show');
+            
+            try {
+                // Resetear el estado en el servidor
+                await fetch('/resetNFC', { method: 'POST' });
+                
+                // Iniciar el proceso de grabación
+                const response = await fetch('/iniciarGrabacionNFC', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_useratributes: parseInt(id_useratributes)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    actualizarUI('waiting');
+                    
+                    // Iniciar polling del estado
+                    if (pollingInterval) {
+                        clearInterval(pollingInterval);
+                    }
+                    pollingInterval = setInterval(verificarEstadoNFC, 500); // Verificar cada 500ms
+                    
+                } else {
+                    actualizarUI('error', { mensaje: data.error || 'Error al iniciar el proceso' });
+                }
+                
+            } catch (error) {
+                console.error("Error al iniciar grabación:", error);
+                actualizarUI('error', { mensaje: 'Error de conexión con el servidor' });
+            }
+        }
+        
+        // Event listeners
+        backButton.addEventListener("click", () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            window.location.href = "{{ url_for('usuarios_temporarios') }}";
+        });
+        
+        retryButton.addEventListener("click", () => {
+            iniciarGrabacion();
+        });
+        
+        // Iniciar el proceso al cargar la página
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!id_useratributes) {
+                actualizarUI('error', { mensaje: 'No se proporcionó ID de usuario' });
+                backButton.textContent = "Volver";
+            } else {
+                // Iniciar automáticamente el proceso de grabación
+                iniciarGrabacion();
+            }
+        });
+        
+        // Limpiar al salir de la página
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            // Resetear el estado NFC si salimos sin completar
+            if (estadoActual !== 'success') {
+                fetch('/resetNFC', { method: 'POST' });
+            }
+        });
+    </script>
+</body>
+</html>

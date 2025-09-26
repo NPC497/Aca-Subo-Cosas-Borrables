@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login-register.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Container para nombre y apellido */
+        .name-container {
+        display: flex;
+        gap: 15px;
+        width: 100%;
+        }
+
+        .input-box {
+        position: relative;
+        margin: 15px 0;
+        width: 100%;
+        }
+
+        .input-box.half-width {
+        width: calc(50% - 7.5px);
+        margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Patrón de ondas animadas -->
+    <div class="wave-background">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <div class="container register-container">
+        <div class="illustration">
+            <img src="../../static/img/shared/LOGOSINFONDO.png" alt="Logo" class="animate-img" id="theme-image">
+        </div>
+        <div class="login-box animate-box">
+            <h2 class="title-main">Crear Cuenta</h2>
+            <form id="registerForm" method="POST" action="{{ url_for('auth.register') }}">
+                {% if errors %}
+                <div class="error-messages" style="color: #e74c3c; margin-bottom: 15px;">
+                    {% for error in errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Container para nombre y apellido juntos -->
+                <div class="name-container">
+                    <div class="input-box half-width">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="nombre" placeholder="Nombre" value="{{ request.form.get('nombre', '') }}" required>
+                    </div>
+                    <div class="input-box half-width">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="apellido" placeholder="Apellido" value="{{ request.form.get('apellido', '') }}" required>
+                    </div>
+                </div>  
+
+                <div class="input-box" style="margin-bottom: 0px;">
+                    <i class="fas fa-id-card"></i>
+                    <input type="number" name="dni" placeholder="DNI" value="{{ request.form.get('dni', '') }}" required>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" value="{{ request.form.get('email', '') }}" required>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Nombre de usuario" value="{{ request.form.get('username', '') }}" required>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="confirm_password" placeholder="Confirmar contraseña" required>
+                </div>
+                <div class="forgot-password">
+                    <a href="{{ url_for('auth.login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+                </div>
+                <button type="submit" class="login-btn">Registrarse</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/shared/login-register.js') }}"></script> 
+</body>
+</html>

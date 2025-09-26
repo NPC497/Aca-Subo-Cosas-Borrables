@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurador WiFi - Escritor NFC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Paleta de colores - Idéntica a tu index.css */
+    :root {
+      --color1: #fff;
+      --color2: #00a9d4;
+      --color3: #1c3166;
+      --color4: #240047;
+      --color5: #1c0021;
+      --bg-color: var(--color1);
+      --text-color: var(--color5);
+      --container-bg: var(--color1);
+      --border-color: var(--color2);
+      --nav-bg: var(--color1);
+      --nav-text: var(--color2);
+      --nav-active-bg: rgba(0, 169, 212, 0.2);
+      --nav-hover-bg: rgba(0, 169, 212, 0.1);
+      --nav-active-text: var(--color2);
+      --header-height: 70px;
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+      background: linear-gradient(0deg, rgba(149, 207, 224, 0.425) 20%, rgb(0, 170, 212) 80%);
+    }
+
+    /* FONDO ANIMADO - Igual que tu index */
+    .background-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.089) 5%, rgba(0, 170, 212, 0.87) 90%);
+    }
+
+    .wave {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: wave-float 6s ease-in-out infinite;
+    }
+
+    .wave-1 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(45deg, var(--color3), var(--color4));
+      top: 10%;
+      left: -10%;
+      animation-delay: 0s;
+    }
+
+    .wave-2 {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(45deg, var(--color3), var(--color5));
+      top: 60%;
+      right: -5%;
+      animation-delay: 2s;
+    }
+
+    .wave-3 {
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(45deg, var(--color5), var(--color2));
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
+    @keyframes wave-float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .floating-circles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(0, 169, 212, 0.05);
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .circle-1 { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
+    .circle-2 { width: 60px; height: 60px; top: 50%; right: 15%; animation-delay: 1s; }
+    .circle-3 { width: 40px; height: 40px; bottom: 30%; left: 60%; animation-delay: 2s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.1); }
+    }
+
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--color2);
+      border-radius: 50%;
+      animation: sparkle 3s ease-in-out infinite;
+    }
+
+    .particle-1 { top: 10%; left: 20%; animation-delay: 0s; }
+    .particle-2 { top: 30%; right: 25%; animation-delay: 0.5s; }
+    .particle-3 { bottom: 40%; left: 40%; animation-delay: 1s; }
+    .particle-4 { top: 60%; right: 10%; animation-delay: 1.5s; }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Header - Igual estructura que tu index */
+    .main-header {
+      background: var(--color1);
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.205);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: var(--transition-speed);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      position: relative;
+    }
+
+    .logo img {
+      transition: var(--transition-speed);
+    }
+
+    .logo img:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn-back {
+      background: transparent;
+      color: var(--color3);
+      border: 2px solid var(--color3);
+    }
+
+    .btn-back:hover {
+      background: var(--color3);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: calc(100vh - 70px);
+    }
+
+    .page-title {
+      text-align: center;
+      color: white;
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 40px;
+    }
+
+    /* Container principal simplificado */
+    .config-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Steps indicator */
+    .steps-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-bottom: 10px;
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background: white;
+      color: var(--color2);
+      border-color: white;
+      transform: scale(1.1);
+    }
+
+    .step.completed .step-number {
+      background: #4caf50;
+      border-color: #4caf50;
+    }
+
+    .step-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+    }
+
+    .step.active .step-label {
+      color: white;
+      font-weight: 600;
+    }
+
+    .step-line {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      z-index: -1;
+    }
+
+    .step:last-child .step-line {
+      display: none;
+    }
+
+    /* Cards estilo consistente */
+    .config-card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: fadeIn 0.6s ease forwards;
+      margin-bottom: 20px;
+    }
+
+    .config-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 169, 212, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(0, 169, 212, 0.2);
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, rgba(0, 169, 212, 0.1), rgba(28, 49, 102, 0.1));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--color2);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color3);
+    }
+
+    /* Device status */
+    .device-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(0, 169, 212, 0.05), rgba(28, 49, 102, 0.05));
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 169, 212, 0.2);
+    }
+
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .device-icon {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--color2);
+      box-shadow: 0 4px 12px rgba(0, 169, 212, 0.2);
+    }
+
+    .device-details h3 {
+      margin: 0 0 5px 0;
+      color: var(--color3);
+      font-size: 18px;
+    }
+
+    .device-details p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-indicator.connected {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+      border: 1px solid #4caf50;
+    }
+
+    .status-indicator.disconnected {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .status-indicator.connecting {
+      background: rgba(255, 152, 0, 0.1);
+      color: #ff9800;
+      border: 1px solid #ff9800;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 currentColor; }
+      70% { box-shadow: 0 0 0 6px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--color3);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--color2);
+      box-shadow: 0 0 0 3px rgba(0, 169, 212, 0.1);
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-group-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .input-group-icon:hover {
+      color: var(--color2);
+    }
+
+    /* Hidden fields para mantener funcionalidad */
+    .hidden-fields {
+      display: none;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color2), var(--color3));
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 169, 212, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: var(--color3);
+      border: 2px solid #e0e0e0;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #e0e0e0;
+      border-color: var(--color2);
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #da190b;
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Network list */
+    .network-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 10px;
+      display: none;
+      background: white;
+    }
+
+    .network-list.show {
+      display: block;
+    }
+
+    .network-item {
+      padding: 15px;
+      margin: 5px 0;
+      background: #f9f9f9;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .network-item:hover {
+      background: rgba(0, 169, 212, 0.05);
+      border-color: rgba(0, 169, 212, 0.3);
+      transform: translateX(5px);
+    }
+
+    .network-item.selected {
+      background: linear-gradient(135deg, rgba(0, 169, 212, 0.1), rgba(28, 49, 102, 0.05));
+      border-color: var(--color2);
+    }
+
+    .network-ssid {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color3);
+    }
+
+    .network-signal {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .signal-icon {
+      font-size: 16px;
+    }
+
+    .signal-excellent { color: #4caf50; }
+    .signal-good { color: #8bc34a; }
+    .signal-fair { color: #ff9800; }
+    .signal-weak { color: #f44336; }
+
+    /* Notification system */
+    .notification-container {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 2000;
+      max-width: 400px;
+    }
+
+    .notification {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid;
+    }
+
+    .notification.success {
+      border-left-color: #4caf50;
+    }
+
+    .notification.error {
+      border-left-color: #f44336;
+    }
+
+    .notification.warning {
+      border-left-color: #ff9800;
+    }
+
+    .notification.info {
+      border-left-color: #2196f3;
+    }
+
+    .notification-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .notification.success .notification-icon { color: #4caf50; }
+    .notification.error .notification-icon { color: #f44336; }
+    .notification.warning .notification-icon { color: #ff9800; }
+    .notification.info .notification-icon { color: #2196f3; }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--color3);
+    }
+
+    .notification-message {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      font-size: 20px;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .notification-close:hover {
+      color: #666;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--color2);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--color3);
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    /* Success state */
+    .success-message {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .success-icon {
+      font-size: 64px;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    .success-title {
+      font-size: 24px;
+      color: var(--color3);
+      margin-bottom: 10px;
+    }
+
+    .success-subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 24px;
+      }
+
+      .config-card {
+        padding: 20px;
+      }
+
+      .device-status {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .notification-container {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .header-container {
+        padding: 0 15px;
+      }
+
+      .main-content {
+        padding: 20px 15px;
+      }
+
+      .page-title {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      .page-subtitle {
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+
+      .steps-container {
+        margin-bottom: 30px;
+      }
+
+      .step-label {
+        font-size: 11px;
+      }
+
+      .config-card {
+        padding: 15px;
+      }
+
+      .card-title {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fondo animado -->
+  <div class="background-container">
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    
+    <div class="floating-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+    
+    <div class="particles">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/shared/logoabiertosinfondo.png') }}" width="60" alt="Logo">
+      </div>
+      <div class="nav-buttons">
+        <a href="{{ url_for('usuarios_temporarios') }}" class="btn-header btn-back">
+          <i class="fas fa-arrow-left"></i>
+          <span>Volver</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <h1 class="page-title">
+      <i class="fas fa-wifi"></i> Configuración de Red WiFi
+    </h1>
+    <p class="page-subtitle">Conecta tu Escritor NFC a una red WiFi en 3 simples pasos</p>
+
+    <!-- Steps Indicator -->
+    <div class="steps-container">
+      <div class="step active" id="step1">
+        <div class="step-number">1</div>
+        <div class="step-label">Conectar dispositivo</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-number">2</div>
+        <div class="step-label">Seleccionar red</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-number">3</div>
+        <div class="step-label">Conectar WiFi</div>
+      </div>
+    </div>
+
+    <div class="config-container">
+      <!-- Card de Estado del Dispositivo -->
+      <div class="config-card" id="deviceCard">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <h2 class="card-title">Estado del Dispositivo</h2>
+        </div>
+
+        <div class="device-status">
+          <div class="device-info">
+            <div class="device-icon">
+              <i class="fas fa-nfc-symbol"></i>
+            </div>
+            <div class="device-details">
+              <h3>Escritor NFC</h3>
+              <p id="devicePort">No conectado</p>
+            </div>
+          </div>
+          <div class="status-indicator disconnected" id="deviceStatusIndicator">
+            <span class="status-dot"></span>
+            <span id="deviceStatusText">Desconectado</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="portSelect">Puerto del dispositivo</label>
+          <select id="portSelect" disabled>
+            <option value="">Buscando dispositivos...</option>
+          </select>
+        </div>
+
+        <div class="button-group">
+          <button id="refreshPortsBtn" class="btn btn-secondary">
+            <i class="fas fa-sync-alt"></i>
+            Buscar Dispositivos
+          </button>
+          <button id="connectBtn" class="btn btn-primary" disabled>
+            <i class="fas fa-plug"></i>
+            Conectar Dispositivo
+          </button>
+        </div>
+      </div>
+
+      <!-- Card de Configuración WiFi -->
+      <div class="config-card" id="wifiCard" style="display: none;">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <h2 class="card-title">Configuración de Red WiFi</h2>
+        </div>
+
+        <div class="device-status" id="wifiStatusCard">
+          <div class="device-info">
+            <div class="device-icon">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <div class="device-details">
+              <h3 id="wifiNetworkName">Sin conexión</h3>
+              <p id="wifiIpAddress">Esperando conexión...</p>
+            </div>
+          </div>
+          <div class="status-indicator disconnected" id="wifiStatusIndicator">
+            <span class="status-dot"></span>
+            <span id="wifiStatusText">Desconectado</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button id="scanBtn" class="btn btn-secondary btn-block">
+            <i class="fas fa-search"></i>
+            Buscar Redes WiFi Disponibles
+          </button>
+          <div id="networkList" class="network-list"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="ssid">Nombre de la Red (SSID)</label>
+          <div class="input-group">
+            <input type="text" id="ssid" placeholder="Selecciona o escribe el nombre de tu red">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-group">
+            <input type="password" id="password" placeholder="Ingresa la contraseña de la red">
+            <i class="fas fa-eye input-group-icon" id="togglePassword"></i>
+          </div>
+        </div>
+
+        <!-- Campos ocultos para mantener funcionalidad -->
+        <div class="hidden-fields">
+          <input type="text" id="serverIP" value="192.168.1.12">
+          <input type="text" id="serverPort" value="5000">
+        </div>
+
+        <div class="button-group">
+          <button id="configBtn" class="btn btn-primary btn-block">
+            <i class="fas fa-link"></i>
+            Conectar a la Red WiFi
+          </button>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <button id="clearBtn" class="btn btn-secondary btn-block">
+            <i class="fas fa-redo"></i>
+            Cambiar Red WiFi
+          </button>
+        </div>
+      </div>
+
+      <!-- Success Card -->
+      <div class="config-card" id="successCard" style="display: none;">
+        <div class="success-message">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="success-title">¡Conexión Exitosa!</h2>
+          <p class="success-subtitle">
+            Tu Escritor NFC está conectado a la red <strong id="connectedNetwork"></strong>
+          </p>
+          <button id="testBtn" class="btn btn-secondary">
+            <i class="fas fa-signal"></i>
+            Verificar Conexión
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
+
+  <script>
+    // Variables globales
+    let isConnected = false;
+    let currentPort = null;
+    let pollInterval = null;
+    let currentStep = 1;
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPorts();
+      setupEventListeners();
+      startStatusPolling();
+      showNotification('info', 'Bienvenido', 'Conecta tu Escritor NFC por USB para comenzar');
+    });
+
+    // Event Listeners
+    function setupEventListeners() {
+      // Botones de conexión
+      document.getElementById('refreshPortsBtn').addEventListener('click', loadPorts);
+      document.getElementById('connectBtn').addEventListener('click', toggleConnection);
+      
+      // Selector de puerto
+      document.getElementById('portSelect').addEventListener('change', (e) => {
+        document.getElementById('connectBtn').disabled = !e.target.value;
+      });
+      
+      // Toggle password visibility
+      document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
+      
+      // Botones de configuración WiFi
+      document.getElementById('scanBtn').addEventListener('click', scanNetworks);
+      document.getElementById('configBtn').addEventListener('click', configureWiFi);
+      document.getElementById('testBtn').addEventListener('click', testConnection);
+      document.getElementById('clearBtn').addEventListener('click', clearWiFi);
+    }
+
+    // Sistema de notificaciones
+    function showNotification(type, title, message) {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+      };
+      
+      notification.innerHTML = `
+        <i class="fas ${icons[type]} notification-icon"></i>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Auto-remove después de 5 segundos
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 5000);
+    }
+
+    // Actualizar pasos
+    function updateStep(step) {
+      currentStep = step;
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'completed'));
+      
+      for (let i = 1; i < step; i++) {
+        document.getElementById(`step${i}`).classList.add('completed');
+      }
+      document.getElementById(`step${step}`).classList.add('active');
+    }
+
+    // Cargar puertos disponibles
+    async function loadPorts() {
+      try {
+        const response = await fetch('/api/nfc/ports');
+        const ports = await response.json();
+        
+        const select = document.getElementById('portSelect');
+        select.innerHTML = '<option value="">Selecciona un dispositivo...</option>';
+        
+        if (ports.length > 0) {
+          ports.forEach(port => {
+            const option = document.createElement('option');
+            option.value = port.port;
+            const friendlyName = port.description.includes('USB') ? 'Escritor NFC' : port.description;
+            option.textContent = `${friendlyName} (${port.port})`;
+            select.appendChild(option);
+          });
+          select.disabled = false;
+          showNotification('success', 'Dispositivos encontrados', `Se detectaron ${ports.length} dispositivo(s)`);
+        } else {
+          showNotification('warning', 'Sin dispositivos', 'No se detectaron Escritores NFC. Verifica la conexión USB.');
+          select.disabled = true;
+        }
+      } catch (error) {
+        showNotification('error', 'Error', 'Error al buscar dispositivos: ' + error.message);
+      }
+    }
+
+    // Toggle conexión
+    async function toggleConnection() {
+      if (isConnected) {
+        await disconnect();
+      } else {
+        await connect();
+      }
+    }
+
+    // Conectar al ESP32
+    async function connect() {
+      const port = document.getElementById('portSelect').value;
+      if (!port) {
+        showNotification('error', 'Error', 'Por favor selecciona un dispositivo');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/nfc/connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ port: port })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          isConnected = true;
+          currentPort = port;
+          updateConnectionUI(true);
+          showNotification('success', 'Conectado', 'Escritor NFC conectado correctamente');
+          updateStep(2);
+          
+          document.getElementById('wifiCard').style.display = 'block';
+          setTimeout(getStatus, 1000);
+        } else {
+          showNotification('error', 'Error de conexión', result.error);
+        }
+      } catch (error) {
+        showNotification('error', 'Error', 'No se pudo conectar: ' + error.message);
+      }
+    }
+
+    // Desconectar
+    async function disconnect() {
+      try {
+        const response = await fetch('/api/nfc/disconnect', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          isConnected = false;
+          currentPort = null;
+          updateConnectionUI(false);
+          showNotification('info', 'Desconectado', 'Escritor NFC desconectado');
+          updateStep(1);
+          
+          document.getElementById('wifiCard').style.display = 'none';
+          document.getElementById('successCard').style.display = 'none';
+        }
+      } catch (error) {
+        showNotification('error', 'Error', 'Error al desconectar: ' + error.message);
+      }
+    }
+
+    // Actualizar UI de conexión
+    function updateConnectionUI(connected) {
+      const connectBtn = document.getElementById('connectBtn');
+      const portSelect = document.getElementById('portSelect');
+      const devicePort = document.getElementById('devicePort');
+      const deviceStatusIndicator = document.getElementById('deviceStatusIndicator');
+      const deviceStatusText = document.getElementById('deviceStatusText');
+      const refreshPortsBtn = document.getElementById('refreshPortsBtn');
+      
+      if (connected) {
+        connectBtn.innerHTML = '<i class="fas fa-unlink"></i> Desconectar';
+        connectBtn.classList.add('btn-danger');
+        connectBtn.classList.remove('btn-primary');
+        portSelect.disabled = true;
+        refreshPortsBtn.style.display = 'none';
+        
+        devicePort.textContent = `Puerto ${currentPort}`;
+        deviceStatusIndicator.classList.remove('disconnected');
+        deviceStatusIndicator.classList.add('connected');
+        deviceStatusText.textContent = 'Conectado';
+      } else {
+        connectBtn.innerHTML = '<i class="fas fa-plug"></i> Conectar Dispositivo';
+        connectBtn.classList.remove('btn-danger');
+        connectBtn.classList.add('btn-primary');
+        portSelect.disabled = false;
+        refreshPortsBtn.style.display = 'inline-flex';
+        
+        devicePort.textContent = 'No conectado';
+        deviceStatusIndicator.classList.remove('connected');
+        deviceStatusIndicator.classList.add('disconnected');
+        deviceStatusText.textContent = 'Desconectado';
+      }
+    }
+
+    // Obtener estado del ESP32
+    async function getStatus() {
+      if (!isConnected) return;
+      
+      try {
+        const response = await fetch('/api/nfc/status');
+        const status = await response.json();
+        updateStatus(status);
+      } catch (error) {
+        console.error('Error obteniendo estado:', error);
+      }
+    }
+
+    // Actualizar estado en UI
+    function updateStatus(status) {
+      const wifiStatusIndicator = document.getElementById('wifiStatusIndicator');
+      const wifiStatusText = document.getElementById('wifiStatusText');
+      const wifiNetworkName = document.getElementById('wifiNetworkName');
+      const wifiIpAddress = document.getElementById('wifiIpAddress');
+      
+      if (status.wifi_connected) {
+        wifiStatusIndicator.classList.remove('disconnected', 'connecting');
+        wifiStatusIndicator.classList.add('connected');
+        wifiStatusText.textContent = 'Conectado';
+        wifiNetworkName.textContent = status.wifi_ssid || 'Red WiFi';
+        wifiIpAddress.textContent = `IP: ${status.ip_address || 'N/A'}`;
+        
+        if (currentStep === 2) {
+          updateStep(3);
+          document.getElementById('successCard').style.display = 'block';
+          document.getElementById('connectedNetwork').textContent = status.wifi_ssid || 'la red';
+        }
+      } else {
+        wifiStatusIndicator.classList.remove('connected', 'connecting');
+        wifiStatusIndicator.classList.add('disconnected');
+        wifiStatusText.textContent = 'Sin conexión';
+        wifiNetworkName.textContent = 'Sin conexión';
+        wifiIpAddress.textContent = 'Esperando conexión...';
+      }
+    }
+
+    // Escanear redes WiFi
+    async function scanNetworks() {
+      const btn = document.getElementById('scanBtn');
+      const networkList = document.getElementById('networkList');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Buscando redes...';
+      networkList.classList.add('show');
+      networkList.innerHTML = '<div class="loading-text"><span class="spinner"></span> Escaneando redes WiFi...</div>';
+      
+      showNotification('info', 'Escaneando', 'Buscando redes WiFi disponibles...');
+      
+      try {
+        const response = await fetch('/api/nfc/scan-wifi', {
+          method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.networks && result.networks.length > 0) {
+          displayNetworks(result.networks);
+          showNotification('success', 'Redes encontradas', `Se encontraron ${result.networks.length} redes WiFi`);
+        } else {
+          networkList.innerHTML = '<div style="color: #666; padding: 20px; text-align: center;">No se encontraron redes WiFi</div>';
+          showNotification('warning', 'Sin redes', 'No se detectaron redes WiFi disponibles');
+        }
+      } catch (error) {
+        networkList.innerHTML = '<div style="color: #f44336; padding: 20px; text-align: center;">Error al escanear</div>';
+        showNotification('error', 'Error', 'Error al buscar redes: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-search"></i> Buscar Redes WiFi Disponibles';
+      }
+    }
+
+    // Mostrar redes encontradas
+    function displayNetworks(networks) {
+      const list = document.getElementById('networkList');
+      
+      list.innerHTML = '';
+      networks.forEach(network => {
+        const item = document.createElement('div');
+        item.className = 'network-item';
+        item.onclick = () => selectNetwork(network.ssid, item);
+        
+        const signal = getSignalInfo(network.rssi);
+        item.innerHTML = `
+          <span class="network-ssid">
+            ${network.encrypted ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-unlock"></i>'}
+            ${network.ssid}
+          </span>
+          <span class="network-signal">
+            <i class="fas fa-wifi signal-icon ${signal.class}"></i>
+            ${signal.text}
+          </span>
+        `;
+        
+        list.appendChild(item);
+      });
+    }
+
+    // Obtener información de señal
+    function getSignalInfo(rssi) {
+      if (rssi >= -50) return { text: 'Excelente', class: 'signal-excellent' };
+      if (rssi >= -60) return { text: 'Buena', class: 'signal-good' };
+      if (rssi >= -70) return { text: 'Regular', class: 'signal-fair' };
+      return { text: 'Débil', class: 'signal-weak' };
+    }
+
+    // Seleccionar red
+    function selectNetwork(ssid, element) {
+      document.getElementById('ssid').value = ssid;
+      
+      document.querySelectorAll('.network-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      element.classList.add('selected');
+      
+      document.getElementById('password').focus();
+      showNotification('info', 'Red seleccionada', `Ingresa la contraseña para ${ssid}`);
+    }
+
+    // Configurar WiFi
+    async function configureWiFi() {
+      const ssid = document.getElementById('ssid').value;
+      const password = document.getElementById('password').value;
+      const serverIP = document.getElementById('serverIP').value || '192.168.1.12';
+      const serverPort = document.getElementById('serverPort').value || '5000';
+      
+      if (!ssid || !password) {
+        showNotification('error', 'Datos incompletos', 'Por favor ingresa el nombre de la red y la contraseña');
+        return;
+      }
+      
+      const btn = document.getElementById('configBtn');
+      const wifiStatusIndicator = document.getElementById('wifiStatusIndicator');
+      const wifiStatusText = document.getElementById('wifiStatusText');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Conectando...';
+      
+      wifiStatusIndicator.classList.remove('connected', 'disconnected');
+      wifiStatusIndicator.classList.add('connecting');
+      wifiStatusText.textContent = 'Conectando...';
+      
+      showNotification('info', 'Conectando', `Intentando conectar a ${ssid}...`);
+      
+      try {
+        const response = await fetch('/api/nfc/configure-wifi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ssid: ssid,
+            password: password,
+            serverIP: serverIP,
+            serverPort: serverPort
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showNotification('success', 'Configuración enviada', 'Verificando conexión...');
+          setTimeout(() => {
+            getStatus();
+          }, 5000);
+        } else {
+          showNotification('error', 'Error', result.error);
+          wifiStatusIndicator.classList.remove('connecting');
+          wifiStatusIndicator.classList.add('disconnected');
+          wifiStatusText.textContent = 'Error';
+        }
+      } catch (error) {
+        showNotification('error', 'Error', 'Error configurando WiFi: ' + error.message);
+        wifiStatusIndicator.classList.remove('connecting');
+        wifiStatusIndicator.classList.add('disconnected');
+        wifiStatusText.textContent = 'Error';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-link"></i> Conectar a la Red WiFi';
+      }
+    }
+
+    // Probar conexión
+    async function testConnection() {
+      const btn = document.getElementById('testBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Verificando...';
+      
+      showNotification('info', 'Verificando', 'Probando conexión con el servidor...');
+      
+      try {
+        const response = await fetch('/api/nfc/test-connection', {
+          method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showNotification('success', 'Conexión exitosa', 'El dispositivo está funcionando correctamente');
+        } else {
+          showNotification('error', 'Error de conexión', 'No se pudo conectar con el servidor');
+        }
+      } catch (error) {
+        showNotification('error', 'Error', error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-signal"></i> Verificar Conexión';
+      }
+    }
+
+    // Borrar configuración WiFi
+    async function clearWiFi() {
+      if (!confirm('¿Deseas cambiar la red WiFi? Esto desconectará el dispositivo de la red actual.')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/nfc/clear-wifi', {
+          method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showNotification('success', 'Configuración borrada', 'Puedes configurar una nueva red WiFi');
+          document.getElementById('ssid').value = '';
+          document.getElementById('password').value = '';
+          document.getElementById('successCard').style.display = 'none';
+          updateStep(2);
+          
+          setTimeout(getStatus, 1000);
+        } else {
+          showNotification('error', 'Error', 'No se pudo borrar la configuración');
+        }
+      } catch (error) {
+        showNotification('error', 'Error', error.message);
+      }
+    }
+
+    // Toggle visibilidad de contraseña
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const icon = document.getElementById('togglePassword');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.add('fa-eye');
+        icon.classList.remove('fa-eye-slash');
+      }
+    }
+
+    // Polling de estado y mensajes
+    function startStatusPolling() {
+      pollInterval = setInterval(async () => {
+        if (isConnected) {
+          await getStatus();
+          await getMessages();
+        }
+      }, 3000);
+    }
+
+    // Obtener mensajes del ESP32
+    async function getMessages() {
+      if (!isConnected) return;
+      
+      try {
+        const response = await fetch('/api/nfc/messages');
+        const messages = await response.json();
+        
+        messages.forEach(msg => {
+          handleMessage(msg);
+        });
+      } catch (error) {
+        console.error('Error obteniendo mensajes:', error);
+      }
+    }
+
+    // Manejar mensajes del ESP32
+    function handleMessage(msg) {
+      switch(msg.type) {
+        case 'wifi_connected':
+          showNotification('success', 'WiFi Conectado', `Conectado a ${msg.ssid}`);
+          updateStatus({
+            wifi_connected: true,
+            wifi_ssid: msg.ssid,
+            ip_address: msg.ip
+          });
+          break;
+          
+        case 'wifi_error':
+          showNotification('error', 'Error WiFi', msg.message);
+          break;
+          
+        case 'info':
+          if (msg.message.includes('Conectando') || msg.message.includes('Escaneando')) {
+            showNotification('info', 'Información', msg.message);
+          }
+          break;
+          
+        case 'error':
+          showNotification('error', 'Error', msg.message);
+          break;
+          
+        case 'test_result':
+          if (msg.success) {
+            showNotification('success', 'Prueba exitosa', msg.message);
+          } else {
+            showNotification('error', 'Prueba fallida', msg.message);
+          }
+          break;
+      }
+    }
+
+    // Cleanup al cerrar
+    window.addEventListener('beforeunload', () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+      if (isConnected) {
+        disconnect();
+      }
+    });
+  </script>
